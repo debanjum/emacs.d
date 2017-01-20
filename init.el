@@ -91,10 +91,14 @@
 	    ;; Setup Babel languages. Can now do Literate Programming
 	    (org-babel-do-load-languages 'org-babel-load-languages
 					 '((python . t)
-					   (sh . t)
+					   (shell . t)
 					   (emacs-lisp . t)
 					   (js . t)
 					   (C . t)))
+
+	    ;; redirect shell errors in babel to output
+	    (setq org-babel-default-header-args:shell
+		  '((:prologue . "exec 2>&1") (:epilogue . ":")))
 	    
 	    ;; Link to specific (git) versions of a file. 
 	    (require 'org-git-link)
@@ -119,9 +123,6 @@
 	    ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
 	    (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
 	    (org-add-link-type "thunderlink" 'org-thunderlink-open)))
-
-;; Zeitgiest Integration
-(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Integrate clipboard with x11, if xclip installed on system
 (use-package xclip
@@ -247,6 +248,7 @@
 
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - emacs")
+(setq inhibit-startup-screen t)  ;disable emacs startup screen
 
 ;; Answer with y or n instead of the default yes or no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -287,5 +289,8 @@
 ;; Realgud Enhanced Debugging
 (use-package realgud :ensure t)
 
-;; EPDB Integration
+;; Zeitgiest Integration
+(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+
+;; EPDB Integration for enhanced python debugging in org-babel
 (use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
