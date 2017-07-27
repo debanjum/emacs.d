@@ -79,10 +79,9 @@
 				     ("m" "Mail" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
 				     
-				     ;; Create Work Entry under Datalad Subheading. Note capture, location 
-				     ("w" "Work" entry (file+olp (concat org-directory "Schedule.org")
-								 "SCHEDULE" "RECURRING" "Fall 2016" "Datalad")
-				      "***** TODO %^{Title}\n      CAPTURED: %U\n      LOCATION: [[file:%F::%i][filelink]] | %a\n      %?"
+				     ;; Create Work Entry with :Work: tag. Note capture time, location 
+				     ("w" "Work" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+				      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
 				      :prepend t :kill-buffer t :empty-lines 1)))
 
 	    ;; Org-Babel tangle
@@ -93,12 +92,9 @@
 					 '((python . t)
 					   (shell . t)
 					   (emacs-lisp . t)
+					   (ledger . t)
 					   (js . t)
 					   (C . t)))
-
-	    ;; redirect shell errors in babel to output
-	    (setq org-babel-default-header-args:shell
-		  '((:prologue . "exec 2>&1") (:epilogue . ":")))
 	    
 	    ;; Link to specific (git) versions of a file. 
 	    (require 'org-git-link)
@@ -123,6 +119,9 @@
 	    ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
 	    (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
 	    (org-add-link-type "thunderlink" 'org-thunderlink-open)))
+
+;; Zeitgiest Integration
+(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Integrate clipboard with x11, if xclip installed on system
 (use-package xclip
@@ -189,7 +188,9 @@
 ;; Intero for Haskell
 (use-package intero
   :ensure t
-  :init (add-hook 'haskell-mode-hook #'intero-mode))
+  :defer t
+  :config (progn
+	    (add-hook 'haskell-mode-hook 'intero-mode)))
 
 ;; Web-Mode for HTML
 (use-package web-mode
@@ -225,7 +226,7 @@
   (add-to-list 'js2-mode-hook 'flycheck-mode 'tern-mode))
 
 ;; Tern for Javascript
-(use-package tern :ensure t)
+(use-package tern :ensure t :defer t)
 (use-package tern-auto-complete
   :ensure t
   :commands tern-ac-setup
@@ -247,8 +248,7 @@
 (delete-selection-mode)
 
 ;; Set current buffer name in emacs X11 window title
-(setq frame-title-format "%b - emacs")
-(setq inhibit-startup-screen t)  ;disable emacs startup screen
+(setq frame-title-format "%b - Emacs")
 
 ;; Answer with y or n instead of the default yes or no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -258,6 +258,18 @@
 
 ;; Set Xelatex as default latex(C-c C-c), if Xelatex installed on system
 (if (executable-find "xelatex") (setq latex-run-command "xelatex"))
+(defun my-latex-setup ()
+  (defun latex-word-count ()
+    (interactive)
+    (let* ((this-file (buffer-file-name))
+           (word-count
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "texcount" nil t nil "-brief" this-file)))))
+      (string-match "\n$" word-count)
+      (message (replace-match "" nil nil word-count))))
+    (define-key latex-mode-map "\C-cw" 'latex-word-count))
+(add-hook 'latex-mode-hook 'my-latex-setup t)
 
 ;; C spacing = 4 instead of default 2
 (setq-default c-basic-offset 4)
@@ -282,15 +294,35 @@
 	    (load-theme 'solarized-light t)))
 
 ;; Spaceline Modeline
-(use-package spaceline-config
-  :ensure spaceline
-  :config (spaceline-emacs-theme))
+;(use-package spaceline-config
+;  :ensure spaceline
+;  :defer 3
+;  :config (spaceline-emacs-theme))
 
 ;; Realgud Enhanced Debugging
-(use-package realgud :ensure t)
+;(use-package realgud :ensure t :defer t)
+;(with-eval-after-load 'python (progn
+;				(load "realgud")
+;				(define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
+;				(use-package epdb :load-path "~/.emacs.d/lisp")))
+;;; EPDB Integration
+;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
-;; Zeitgiest Integration
-(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+;; Markdown Mode
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
-;; EPDB Integration for enhanced python debugging in org-babel
-(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+
+;; Beancount Minor Mode
+;; Get beancount.el from https://bitbucket.org/blais/beancount
+(use-package beancount :load-path "~/.emacs.d/lisp/beancount.el")
+(add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
+
+;; not portable, but doesn't block/fail emacs load
+(use-package pdf-mode :load-path "~/.emacs.d/lisp/" :mode (("\\.pdf\\'" . pdf-mode)))
