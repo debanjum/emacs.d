@@ -1,16 +1,129 @@
 ;; Setup Package Managers
 (require 'package)
 (setq package-archives '())
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/") t)
 (package-initialize)
 
 ;; Install use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+
+;; ---------------
+;; Basic Config
+;; ---------------
+
+;; Disable toolbar
+(tool-bar-mode -1)
+
+;; Saner default deletion behaviour
+(delete-selection-mode)
+
+;; Set current buffer name in emacs X11 window title
+(setq frame-title-format "%b - Emacs")
+
+;; Answer with y or n instead of the default yes or no
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; C spacing = 4 instead of default 2
+(setq-default c-basic-offset 4)
+
+;; Tramp default ssh
+(setq tramp-default-method "ssh")
+
+;; Make ipython 5.x (color)compatible with Emacs eshell
+(if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
+
+;; Set SBCL as default lisp interpreter
+(if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
+
+; enable some commands that are disabled for dummies
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+;; Global Default Zoom for Work
+(global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 200)))
+(global-set-key (kbd "C-x C-g -") '(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
+
+
+;; ---------------
+;; Tools
+;; ---------------
+
+;; Integrate clipboard with x11, if xclip installed on system
+(use-package xclip
+  :ensure t
+  :if (executable-find "xclip")
+  :init (xclip-mode 1)
+  :config (put 'narrow-to-region 'disabled nil))
+
+;; whitespace-cleanup-mode. remove whitespaces on buffer save
+(use-package whitespace-cleanup-mode
+  :ensure t
+  :init (add-hook 'python-mode-hook #'whitespace-cleanup-mode))
+
+;; Expand-Region for intelligent highlight expansion
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+
+;; Ido for file/buffer/../ auto-completion, fuzzy-matching etc
+(use-package ido
+  :ensure t
+  :init (ido-mode 1)
+  :config  (progn
+	     (setq
+	      ido-enable-flex-matching t
+	      ido-everywhere t
+	      ido-use-virtual-buffers t)))  ;testing virtual buffers, is it cluttering up my buffer search too much?
+
+;; Smex for M-x auto-completion, fuzzy-matching etc
+(use-package smex
+  :ensure t
+  :bind (("M-x" . smex))
+  :config (smex-initialize))
+
+;; Recentf to suggest recently opened files on C-x C-r
+(use-package recentf
+  :ensure t
+  :init (recentf-mode t)
+  :bind ("C-x C-r" . ido-recentf-open)  ;; replace `find-file-read-only` with more a useful command
+  :config (progn
+	    (setq recentf-max-saved-items 50)
+	    (defun ido-recentf-open ()
+	      "Use `ido-completing-read` to `find-file` a recent file"
+	      (interactive)
+	      (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+		  (message "Opening file...")
+		(message "Aborting")))))
+
+;; ag - the silver searcher
+(use-package ag
+  :ensure t
+  :commands (ag ag-regexp ag-project)
+  :config (setq ag-highlight-search t))
+
+;; Magit for Git
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+
+;; Zeitgiest Integration
+(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+
+;; Beancount Minor Mode
+;; Get beancount.el from https://bitbucket.org/blais/beancount
+(use-package beancount :load-path "~/.emacs.d/lisp/beancount.el")
+(add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
+
+
+;; ---------------
+;; Major Packages
+;; ---------------
 
 ;; Org-Mode
 (use-package org
@@ -54,9 +167,22 @@
 	     ;; Org-Mode Link Search
 	     org-link-search-must-match-exact-headline nil
 
-	     ;; Force UTF-8
+	     ;; Default to Boolean Search
+	     org-agenda-search-view-always-boolean t
+	     org-agenda-text-search-extra-files (list "Incoming.org" "Archive.org")
+
+	    ;; Force UTF-8
 	     org-export-coding-system 'utf-8
 	     
+	     ;; Set Effort Estimates, Column View, Tags
+	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
+	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
+	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil)        ; { @WORK(o) @HOME(m) @COMMUTE(c) }
+			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil)  ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
+			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) (:endgroup . nil)            ; { TRY(t) MAINTAIN(n) FIX(x) }
+			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil); { PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
+			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTES" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f)
+
 	     ;; Customise Refile (C-c C-w) 
 	     org-refile-use-outline-path 'file         ;; specify in file.org/heading/sub-heading format 
 	     org-outline-path-complete-in-steps t      ;; use TAB for completion
@@ -82,7 +208,12 @@
 				     ;; Create Work Entry with :Work: tag. Note capture time, location 
 				     ("w" "Work" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
-				      :prepend t :kill-buffer t :empty-lines 1)))
+				      :prepend t :kill-buffer t :empty-lines 1)
+
+				     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
+				     ("c" "Meeting" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+				      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
+				      :prepend t :empty-lines 1)))
 
 	    ;; Org-Babel tangle
 	    (require 'ob-tangle)
@@ -120,60 +251,6 @@
 	    (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
 	    (org-add-link-type "thunderlink" 'org-thunderlink-open)))
 
-;; Zeitgiest Integration
-(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
-
-;; Integrate clipboard with x11, if xclip installed on system
-(use-package xclip
-  :ensure t
-  :if (executable-find "xclip")
-  :init (xclip-mode 1)
-  :config (put 'narrow-to-region 'disabled nil))
-
-;; whitespace-cleanup-mode. remove whitespaces on buffer save
-(use-package whitespace-cleanup-mode
-  :ensure t
-  :init (add-hook 'python-mode-hook #'whitespace-cleanup-mode))
-
-;; Expand-Region for intelligent highlight expansion
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
-
-;; Ido for file/buffer/../ auto-completion, fuzzy-matching etc
-(use-package ido
-  :ensure t
-  :init (ido-mode 1)
-  :config  (progn
-	     (setq
-	      ido-enable-flex-matching t
-	      ido-everywhere t)))
-
-;; Smex for M-x auto-completion, fuzzy-matching etc
-(use-package smex
-  :ensure t
-  :bind (("M-x" . smex))
-  :config (smex-initialize))
-
-;; Recentf to suggest recently opened files on C-x C-r
-(use-package recentf
-  :ensure t
-  :init (recentf-mode t)
-  :bind ("C-x C-r" . ido-recentf-open)  ;; replace `find-file-read-only` with more a useful command
-  :config (progn
-	    (setq recentf-max-saved-items 50)
-	    (defun ido-recentf-open ()
-	      "Use `ido-completing-read` to `find-file` a recent file"
-	      (interactive)
-	      (if (find-file (ido-completing-read "Find recent file: " recentf-list))
-		  (message "Opening file...")
-		(message "Aborting")))))
-
-;; Magit for Git
-(use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
-
 ;; Elpy for Python
 (use-package elpy
   :ensure t
@@ -184,6 +261,15 @@
 	     elpy-test-nose-runner-command '("nosetests" "-s" "-v")
 	     elpy-test-runner 'elpy-test-nose-runner
 	     )))
+
+;; Realgud Enhanced Debugging
+;(use-package realgud :ensure t :defer t)
+;(with-eval-after-load 'python (progn
+;				(load "realgud")
+;				(define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
+;				(use-package epdb :load-path "~/.emacs.d/lisp")))
+;;; EPDB Integration
+;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Intero for Haskell
 (use-package intero
@@ -232,30 +318,6 @@
   :commands tern-ac-setup
   :init (with-eval-after-load 'tern (tern-ac-setup)))
 
-
-(use-package yaml-mode
-  :ensure t
-  :mode (("\\.yml\\'" . yaml-mode))
-  :config (progn
-	    (add-hook 'yaml-mode-hook
-		      (lambda ()
-			(define-key yaml-mode-map "\C-m" 'newline-and-indent)))))
-
-;; Disable toolbar
-(tool-bar-mode -1)
-
-;; Copy-Paste from/to Terminal Emacs
-(delete-selection-mode)
-
-;; Set current buffer name in emacs X11 window title
-(setq frame-title-format "%b - Emacs")
-
-;; Answer with y or n instead of the default yes or no
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-;; Set Clisp as default lisp interpreter (Slime)
-(if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
-
 ;; Set Xelatex as default latex(C-c C-c), if Xelatex installed on system
 (if (executable-find "xelatex") (setq latex-run-command "xelatex"))
 (defun my-latex-setup ()
@@ -271,14 +333,20 @@
     (define-key latex-mode-map "\C-cw" 'latex-word-count))
 (add-hook 'latex-mode-hook 'my-latex-setup t)
 
-;; C spacing = 4 instead of default 2
-(setq-default c-basic-offset 4)
+;; Markdown Mode
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
-;; Tramp default ssh
-(setq tramp-default-method "ssh")
 
-;; Make ipython 5.x (color)compatible with Emacs eshell
-(setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i")
+;; ---------------
+;; THEME
+;; ---------------
 
 ;; Solarized Emacs Theme @ https://github.com/bbatsov/solarized-emacs
 ;; If theme not loaded => init.el (partial) failed
@@ -292,37 +360,3 @@
   :config (progn
 	    (load "solarized-theme-autoloads" nil t)
 	    (load-theme 'solarized-light t)))
-
-;; Spaceline Modeline
-;(use-package spaceline-config
-;  :ensure spaceline
-;  :defer 3
-;  :config (spaceline-emacs-theme))
-
-;; Realgud Enhanced Debugging
-;(use-package realgud :ensure t :defer t)
-;(with-eval-after-load 'python (progn
-;				(load "realgud")
-;				(define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
-;				(use-package epdb :load-path "~/.emacs.d/lisp")))
-;;; EPDB Integration
-;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
-
-;; Markdown Mode
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
-
-
-;; Beancount Minor Mode
-;; Get beancount.el from https://bitbucket.org/blais/beancount
-(use-package beancount :load-path "~/.emacs.d/lisp/beancount.el")
-(add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
-
-;; not portable, but doesn't block/fail emacs load
-(use-package pdf-mode :load-path "~/.emacs.d/lisp/" :mode (("\\.pdf\\'" . pdf-mode)))
