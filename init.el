@@ -143,6 +143,9 @@
 	     org-log-done t
 	     org-reverse-note-order t	 
 
+	     ;; Speed Commands
+	     org-use-speed-commands t
+
 	     ;; Enforce TODO dependency chains
 	     org-enforce-todo-dependencies t
 
@@ -171,16 +174,24 @@
 	     org-agenda-search-view-always-boolean t
 	     org-agenda-text-search-extra-files (list "Incoming.org" "Archive.org")
 
-	    ;; Force UTF-8
+	     ;; Force UTF-8
 	     org-export-coding-system 'utf-8
+
+	     ;; Include Org Modules
+	     org-modules '(org-habit)
+
+	     ; Org-Habit Settings
+	     org-habit-preceding-days 30
+	     org-habit-following-days 3
+	     org-habit-graph-column 80
 	     
 	     ;; Set Effort Estimates, Column View, Tags
 	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
 	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
-	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil)        ; { @WORK(o) @HOME(m) @COMMUTE(c) }
-			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil)  ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
-			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) (:endgroup . nil)            ; { TRY(t) MAINTAIN(n) FIX(x) }
-			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil); { PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
+	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil)               ; { @WORK(o) @HOME(m) @COMMUTE(c) }
+			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil)         ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
+			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
+			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil);{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
 			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTES" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f)
 
 	     ;; Customise Refile (C-c C-w) 
@@ -249,7 +260,16 @@
 	    
 	    ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
 	    (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
-	    (org-add-link-type "thunderlink" 'org-thunderlink-open)))
+	    (org-link-set-parameters
+	     "thunderlink"
+	     :follow 'org-thunderlink-open
+	     :face '(:foreground "dodgerblue" :underline t)
+
+	    (org-link-set-parameters
+	     "outlook"
+	     :follow 'org-thunderlink-open
+	     :face '(:foreground "dodgerblue" :underline t :strike-through t)
+	     :help-echo "Outlook not available on this machine"))))
 
 ;; Elpy for Python
 (use-package elpy
