@@ -113,12 +113,16 @@
   :bind ("C-x g" . magit-status))
 
 ;; Zeitgiest Integration
-(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+;(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Beancount Minor Mode
 ;; Get beancount.el from https://bitbucket.org/blais/beancount
 (use-package beancount :load-path "~/.emacs.d/lisp/beancount.el")
 (add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
+
+;; Nov.el Epub Reader Mode
+(use-package nov)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 
 ;; ---------------
@@ -224,7 +228,14 @@
 				     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
 				     ("c" "Meeting" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
-				      :prepend t :empty-lines 1)))
+				      :prepend t :empty-lines 1))
+
+	     ;; define music speed commands
+	     org-speed-commands-music
+	     '(("o" . (lambda ()
+			"Open media at point"
+			(let ((song-name (format "\"%s\"" (nth 4 (org-heading-components)))))
+			  (call-process "corticotropic" nil 0 nil song-name))))))
 
 	    ;; Org-Babel tangle
 	    (require 'ob-tangle)
@@ -263,13 +274,32 @@
 	    (org-link-set-parameters
 	     "thunderlink"
 	     :follow 'org-thunderlink-open
-	     :face '(:foreground "dodgerblue" :underline t)
+	     :face '(:foreground "dodgerblue" :underline t))
 
 	    (org-link-set-parameters
-	     "outlook"
-	     :follow 'org-thunderlink-open
+	     "C"
+	     :follow '(lambda(path) (message "Link only available on Windows"))
+	     :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+	    (org-link-set-parameters
+	     "E"
+	     :follow '(lambda(path) (message "Link only available on Windows"))
+	     :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+	     (org-link-set-parameters
+	      "outlook"
+	     :follow '(lambda(path) (message "Outlook not available on linux"))
 	     :face '(:foreground "dodgerblue" :underline t :strike-through t)
-	     :help-echo "Outlook not available on this machine"))))
+	     :help-echo "Outlook not available on this machine")
+
+	     ;; These speed commands are enabled under context with property :TYPE: song
+	     (defun org-speed-music (keys)
+	       (when (and (bolp) (looking-at org-outline-regexp)
+			  (equal "song" (org-entry-get (point) "TYPE")))
+		 (cdr (assoc keys org-speed-commands-music))))
+
+	     ;;; Add to org-speed-command-hook
+	     (add-hook 'org-speed-command-hook 'org-speed-music)))
 
 ;; Elpy for Python
 (use-package elpy
