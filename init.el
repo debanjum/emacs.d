@@ -17,11 +17,16 @@
 ;; Basic Config
 ;; ---------------
 
-;; Disable toolbar
+;; Disable menu, toolbar, scrollbar
 (tool-bar-mode -1)
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
 
-;; Saner default deletion behaviour
+;; Replace/Remove selection if present on yank/delete
 (delete-selection-mode)
+
+;; show columns by default
+(column-number-mode)
 
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - Emacs")
@@ -29,21 +34,60 @@
 ;; Answer with y or n instead of the default yes or no
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; C spacing = 4 instead of default 2
-(setq-default c-basic-offset 4)
+;; Inhibit startup screen
+(setq inhibit-startup-screen t)
+
+;; Blank *scratch* buffer
+(setq initial-scratch-message nil)
+
+;; Make clipboard work well with X applications
+(setq x-select-enable-clipboard t)
+(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+;; No newlines past EOF
+(setq next-line-add-newlines nil)
 
 ;; Tramp default ssh
 (setq tramp-default-method "ssh")
 
-;; Make ipython 5.x (color)compatible with Emacs eshell
-(if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
-
-;; Set SBCL as default lisp interpreter
-(if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
+;; C spacing = 4 instead of default 2
+(setq-default c-basic-offset 4)
 
 ; enable some commands that are disabled for dummies
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+;; backup in single, flat directory
+(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
+
+;; forward, previous paragraph
+(global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "M-p") 'backward-paragraph)
+
+;; next, previous buffer
+(global-set-key (kbd "C-c C-p") 'previous-buffer)
+(global-set-key (kbd "C-c C-n") 'next-buffer)
+
+;; Use UTF-8
+(prefer-coding-system 'utf-8)
+
+;; Kill-region for an active (transient-mark-mode) region but backward-kill-word otherwise
+(defun backward-kill-word-or-kill-region (&optional arg)
+  (interactive "p")
+  (if (region-active-p)
+      (kill-region (region-beginning) (region-end))
+    (backward-kill-word arg)))
+(global-set-key (kbd "C-w") 'backward-kill-word-or-kill-region)
+
+;; Fullscreen
+(defun toggle-fullscreen (&optional f)
+  (interactive)
+  (let ((current-value (frame-parameter nil 'fullscreen)))
+    (set-frame-parameter nil 'fullscreen
+			 (if (equal 'fullboth current-value)
+			     (if (boundp 'old-fullscreen) old-fullscreen nil)
+			   (progn (setq old-fullscreen current-value) 'fullboth)))))
+(global-set-key [f11] 'toggle-fullscreen)
 
 ;; Global Default Zoom for Work
 (global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 200)))
@@ -54,12 +98,19 @@
 ;; Tools
 ;; ---------------
 
-;; Integrate clipboard with x11, if xclip installed on system
-(use-package xclip
+(use-package browse-kill-ring
   :ensure t
-  :if (executable-find "xclip")
-  :init (xclip-mode 1)
-  :config (put 'narrow-to-region 'disabled nil))
+  :defer t
+  :config (browse-kill-ring-default-keybindings))
+
+(use-package undo-tree
+  :ensure t
+  :diminish undo-tree-mode
+  :config (global-undo-tree-mode))
+
+;; Uniquify buffer names foo.c:src, foo.c:extra
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
 
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
 (use-package whitespace-cleanup-mode
@@ -79,7 +130,7 @@
 	     (setq
 	      ido-enable-flex-matching t
 	      ido-everywhere t
-	      ido-use-virtual-buffers t)))  ;testing virtual buffers, is it cluttering up my buffer search too much?
+	      ido-use-virtual-buffers t)))
 
 ;; Smex for M-x auto-completion, fuzzy-matching etc
 (use-package smex
@@ -113,7 +164,7 @@
   :bind ("C-x g" . magit-status))
 
 ;; Zeitgiest Integration
-;(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Beancount Minor Mode
 ;; Get beancount.el from https://bitbucket.org/blais/beancount
@@ -145,7 +196,7 @@
   :config (progn
 	    (setq
 	     org-log-done t
-	     org-reverse-note-order t	 
+	     org-reverse-note-order t
 
 	     ;; Speed Commands
 	     org-use-speed-commands t
@@ -162,21 +213,21 @@
 	     org-directory "~/Notes/"
 	     org-agenda-files (list (concat org-directory "Schedule.org"))
 	     org-archive-location (concat org-directory "Archive.org::* %s")
-	 
+
 	     ;; Mobile Org Settings
 	     org-mobile-directory "~/Dropbox/Notes/"
 	     org-mobile-files (list "Schedule.org" "Incoming.org")
 	     org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
-	     
+
 	     ;; Org-Babel execute without confirmation
 	     org-confirm-babel-evaluate nil
-	     
+
 	     ;; Org-Mode Link Search
 	     org-link-search-must-match-exact-headline nil
 
 	     ;; Default to Boolean Search
 	     org-agenda-search-view-always-boolean t
-	     org-agenda-text-search-extra-files (list "Incoming.org" "Archive.org")
+	     org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
 
 	     ;; Force UTF-8
 	     org-export-coding-system 'utf-8
@@ -192,35 +243,35 @@
 	     ;; Set Effort Estimates, Column View, Tags
 	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
 	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
-	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil)               ; { @WORK(o) @HOME(m) @COMMUTE(c) }
-			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil)         ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
+	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
+			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
 			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
-			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil);{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
+			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
 			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTES" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f)
 
-	     ;; Customise Refile (C-c C-w) 
-	     org-refile-use-outline-path 'file         ;; specify in file.org/heading/sub-heading format 
-	     org-outline-path-complete-in-steps t      ;; use TAB for completion
-	     org-refile-targets '((nil :maxlevel . 6)  ;; refile-target = depth 6 in agenda files
+	     ;; Customise Refile (C-c C-w)
+	     org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
+	     org-outline-path-complete-in-steps t ;; use TAB for completion
+	     org-refile-targets '((nil :maxlevel . 6) ;; refile-target = depth 6 in agenda files
 				  (org-agenda-files :maxlevel . 6))
-	     
+
 	     ;; Setup Org Capture
 	     org-default-notes-file (concat org-directory "Schedule.org")
 	     org-capture-templates '(("s" "Schedule" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
-				     
+
 				     ;; Ask For Heading, then TAGS, then let user edit entry
 				     ("i" "Incoming" entry (file+headline (concat org-directory "Incoming.org") "INCOMING")
 				      "** %?\n  CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
-				     
+
 				     ;; Jumps to clocked in entry
 				     ("a" "Append to Clocked" item (clock) "\t%i %?")
 
 				     ;; For Web/Mail Capture
 				     ("m" "Mail" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
-				     
-				     ;; Create Work Entry with :Work: tag. Note capture time, location 
+
+				     ;; Create Work Entry with :Work: tag. Note capture time, location
 				     ("w" "Work" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
 				      :prepend t :kill-buffer t :empty-lines 1)
@@ -236,70 +287,85 @@
 			"Open media at point"
 			(let ((song-name (format "\"%s\"" (nth 4 (org-heading-components)))))
 			  (call-process "corticotropic" nil 0 nil song-name))))))
+			  (call-process "mpsyt" nil 0 nil (format "/%s, add 1, vp, all" song-name))))))
 
-	    ;; Org-Babel tangle
-	    (require 'ob-tangle)
+            ;; Org-Babel tangle
+            (require 'ob-tangle)
 
-	    ;; Setup Babel languages. Can now do Literate Programming
-	    (org-babel-do-load-languages 'org-babel-load-languages
-					 '((python . t)
-					   (shell . t)
-					   (emacs-lisp . t)
-					   (ledger . t)
-					   (js . t)
-					   (C . t)))
-	    
-	    ;; Link to specific (git) versions of a file. 
-	    (require 'org-git-link)
-	    
-	    ;; Github Link Formatter
-	    (defun gitlink (tag)
-	      "converts github issues, pull requests into valid format"
-	      (setq ghsplit (split-string tag "/"))
-	      (if (string-match-p (regexp-quote "i#") (car (last ghsplit)))
-		  (concat (pop ghsplit) "/" (pop ghsplit) "/issues/" (substring (pop ghsplit) 2 nil))
-		(if (string-match-p (regexp-quote "p#") (car (last ghsplit)))
-		    (concat (pop ghsplit) "/" (pop ghsplit) "/pull/" (substring (pop ghsplit) 2 nil))
-		  (concat "" tag))))
-	    
-	    ;; Shorthand for links
-	    (setq org-link-abbrev-alist '(("github" . "https://github.com/%(gitlink)")
-					  ("gitlab" . "https://gitlab.com/%(gitlink)")
-					  ("google" . "https://www.google.com/search?q=%s")
-					  ("gmap"   . "https://maps.google.com/maps?q=%s")
-					  ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")))
-	    
-	    ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
-	    (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
-	    (org-link-set-parameters
-	     "thunderlink"
-	     :follow 'org-thunderlink-open
-	     :face '(:foreground "dodgerblue" :underline t))
+            ;; Setup Babel languages. Can now do Literate Programming
+            (org-babel-do-load-languages 'org-babel-load-languages
+                                         '((python . t)
+                                           (shell . t)
+                                           (emacs-lisp . t)
+                                           (ledger . t)
+                                           (js . t)
+                                           (C . t)))
 
-	    (org-link-set-parameters
-	     "C"
-	     :follow '(lambda(path) (message "Link only available on Windows"))
-	     :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+            ;; Link to specific (git) versions of a file.
+            (require 'org-git-link)
 
-	    (org-link-set-parameters
-	     "E"
-	     :follow '(lambda(path) (message "Link only available on Windows"))
-	     :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+            ;; Github Link Formatter
+            (defun gitlink (tag)
+              "converts github issues, pull requests into valid format"
+              (setq ghsplit (split-string tag "/"))
+              (if (string-match-p (regexp-quote "i#") (car (last ghsplit)))
+                  (concat (pop ghsplit) "/" (pop ghsplit) "/issues/" (substring (pop ghsplit) 2 nil))
+                (if (string-match-p (regexp-quote "p#") (car (last ghsplit)))
+                    (concat (pop ghsplit) "/" (pop ghsplit) "/pull/" (substring (pop ghsplit) 2 nil))
+                  (concat "" tag))))
 
-	     (org-link-set-parameters
-	      "outlook"
-	     :follow '(lambda(path) (message "Outlook not available on linux"))
-	     :face '(:foreground "dodgerblue" :underline t :strike-through t)
-	     :help-echo "Outlook not available on this machine")
+            ;; Shorthand for links
+            (setq org-link-abbrev-alist '(("github" . "https://github.com/%(gitlink)")
+                                          ("gitlab" . "https://gitlab.com/%(gitlink)")
+                                          ("google" . "https://www.google.com/search?q=%s")
+                                          ("gmap"   . "https://maps.google.com/maps?q=%s")
+                                          ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")))
 
-	     ;; These speed commands are enabled under context with property :TYPE: song
-	     (defun org-speed-music (keys)
-	       (when (and (bolp) (looking-at org-outline-regexp)
-			  (equal "song" (org-entry-get (point) "TYPE")))
-		 (cdr (assoc keys org-speed-commands-music))))
+            ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
+            (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
+            (org-link-set-parameters
+             "thunderlink"
+             :follow 'org-thunderlink-open
+             :face '(:foreground "dodgerblue" :underline t))
+
+            (org-link-set-parameters
+             "C"
+             :follow '(lambda(path) (message "Link only available on Windows"))
+             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+            (org-link-set-parameters
+             "E"
+             :follow '(lambda(path) (message "Link only available on Windows"))
+             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+            (org-link-set-parameters
+             "outlook"
+             :follow '(lambda(path) (message "Outlook not available on linux"))
+             :face '(:foreground "dodgerblue" :underline t :strike-through t)
+             :help-echo "Outlook not available on this machine")
+
+            ;; These speed commands are enabled under context with property :TYPE: song
+            (defun org-speed-music (keys)
+              (when (and (bolp) (looking-at org-outline-regexp)
+                         (equal "song" (org-entry-get (point) "TYPE")))
+                (cdr (assoc keys org-speed-commands-music))
+                ;; Add to org-speed-command-hook
+                (add-hook 'org-speed-command-hook 'org-speed-music)))
+
 
 	     ;;; Add to org-speed-command-hook
 	     (add-hook 'org-speed-command-hook 'org-speed-music)))
+
+;; Paraedit for lisp
+(use-package paredit
+  :ensure t
+  :config (progn
+	    (define-key paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
+	    (define-key paredit-mode-map (kbd "M-[") 'paredit-wrap-square)
+	    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)))
+
+;; Set SBCL as default lisp interpreter
+(if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
 ;; Elpy for Python
 (use-package elpy
@@ -309,8 +375,10 @@
   :config (progn
 	    (setq
 	     elpy-test-nose-runner-command '("nosetests" "-s" "-v")
-	     elpy-test-runner 'elpy-test-nose-runner
-	     )))
+	     elpy-test-runner 'elpy-test-nose-runner)))
+
+;; Make ipython 5.x (color)compatible with Emacs eshell
+(if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
 
 ;; Realgud Enhanced Debugging
 ;(use-package realgud :ensure t :defer t)
@@ -333,9 +401,9 @@
   :ensure t
   :mode ("\\.html\\'" . web-mode)
   :config (progn
-            (add-hook 'web-mode-hook
-                      (lambda ()
-                        (setq web-mode-enable-css-colorization t
+	    (add-hook 'web-mode-hook
+		      (lambda ()
+			(setq web-mode-enable-css-colorization t
 			      web-mode-markup-indent-offset 2
 			      web-mode-css-indent-offset 2
 			      web-mode-code-indent-offset 2
@@ -349,7 +417,7 @@
 (use-package js2-mode
   :ensure t
   :mode (("\\.js\\'" . js2-mode)
-         ("\\.json\\'" . javascript-mode))
+	 ("\\.json\\'" . javascript-mode))
   :interpreter ("node" . js2-mode)
   :commands js2-mode
   :config (progn
@@ -374,10 +442,10 @@
   (defun latex-word-count ()
     (interactive)
     (let* ((this-file (buffer-file-name))
-           (word-count
-            (with-output-to-string
-              (with-current-buffer standard-output
-                (call-process "texcount" nil t nil "-brief" this-file)))))
+	   (word-count
+	    (with-output-to-string
+	      (with-current-buffer standard-output
+		(call-process "texcount" nil t nil "-brief" this-file)))))
       (string-match "\n$" word-count)
       (message (replace-match "" nil nil word-count))))
     (define-key latex-mode-map "\C-cw" 'latex-word-count))
@@ -389,8 +457,8 @@
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+	 ("\\.md\\'" . markdown-mode)
+	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
 
