@@ -239,7 +239,15 @@
 	     org-habit-preceding-days 30
 	     org-habit-following-days 3
 	     org-habit-graph-column 80
-	     
+
+	     ;; Custom Agenda's: Org-Music
+	     ;; this triggers search in given restricted file, but need to pass search term
+	     org-agenda-custom-commands
+	     '(("p" "Play Music" search ""
+		((org-agenda-files '("~/Music/Music.org"))
+		 (org-agenda-text-search-extra-files nil)))
+	       ("w" "Work" tags-tree "WORKITEM"))
+
 	     ;; Set Effort Estimates, Column View, Tags
 	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
 	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
@@ -285,9 +293,10 @@
 	     org-speed-commands-music
 	     '(("o" . (lambda ()
 			"Open media at point"
-			(let ((song-name (format "\"%s\"" (nth 4 (org-heading-components)))))
-			  (call-process "corticotropic" nil 0 nil song-name))))))
-			  (call-process "mpsyt" nil 0 nil (format "/%s, add 1, vp, all" song-name))))))
+			(let ((song-name (format "%s" (nth 4 (org-heading-components)))))
+			  (shell-command "ps aux | grep mpsyt | awk -F' ' '{print $2}' | xargs kill")
+			  (message "Streaming: %s" song-name)
+			  (call-process "mpsyt" nil 0 nil (format "/%s, add 1, vp, all" song-name)))))))
 
             ;; Org-Babel tangle
             (require 'ob-tangle)
@@ -348,13 +357,37 @@
             (defun org-speed-music (keys)
               (when (and (bolp) (looking-at org-outline-regexp)
                          (equal "song" (org-entry-get (point) "TYPE")))
-                (cdr (assoc keys org-speed-commands-music))
-                ;; Add to org-speed-command-hook
-                (add-hook 'org-speed-command-hook 'org-speed-music)))
+                (cdr (assoc keys org-speed-commands-music))))
+	    ;; Add to org-speed-command-hook
+	    (add-hook 'org-speed-command-hook 'org-speed-music)
 
+            ;; ---------------
+            ;; ORG-MUSIC
+            ;; ---------------
 
-	     ;;; Add to org-speed-command-hook
-	     (add-hook 'org-speed-command-hook 'org-speed-music)))
+	    (defun filter-org-headings ()
+	      "extract headings from org ast"
+	      (org-element-map (org-element-parse-buffer) 'headline
+		(lambda (hs) (org-element-property :title hs))))
+
+	    (defun play-songs-in-mpsyt (mpsyt-playlist)
+	      "enqueue first youtube result from song names in mpsyt and play"
+	      (call-process "mpsyt" nil 0 nil mpsyt-playlist))
+
+	    (defun create-mpsyt-playlist-string (songs)
+	      "format song names to send to mpsyt"
+	      (format "%s vp, all"
+		      (mapconcat #'(lambda (song) (format "/%s, add 1, " (car song))) songs " ")))
+
+	    (defun play-org-music (search-string)
+	      "create search string filtered playlist from org music library and play it in mpsyt"
+	      ;; filter songs in music library using search terms
+	      (execute-kbd-macro (kbd (format "C-c a p %s SPC +{:TYPE:\\s-+song} SPC -\"+TAGS:\"" (replace-regexp-in-string " " " SPC " search-string))))
+	      ;; write filtered playlist to org file and open
+	      (org-agenda-write "/tmp/playlist.org" t)
+	      ;; get song-name from org playlist's headings, format it to enqueue and play in mpsyt, trigger mpsyt
+	      (play-songs-in-mpsyt (create-mpsyt-playlist-string (filter-org-headings))))))
+
 
 ;; Paraedit for lisp
 (use-package paredit
