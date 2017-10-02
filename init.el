@@ -53,7 +53,8 @@
 ;; C spacing = 4 instead of default 2
 (setq-default c-basic-offset 4)
 
-; enable some commands that are disabled for dummies
+;; enable some commands that are disabled for dummies
+(put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
@@ -70,6 +71,9 @@
 
 ;; Use UTF-8
 (prefer-coding-system 'utf-8)
+
+;; Ansi color shell output
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 ;; Kill-region for an active (transient-mark-mode) region but backward-kill-word otherwise
 (defun backward-kill-word-or-kill-region (&optional arg)
@@ -175,6 +179,8 @@
 (use-package nov)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
+;; Org-Music Mode
+(use-package org-music :load-path "~/.emacs.d/lisp/org-music.el")
 
 ;; ---------------
 ;; Major Packages
@@ -244,7 +250,7 @@
 	     ;; this triggers search in given restricted file, but need to pass search term
 	     org-agenda-custom-commands
 	     '(("p" "Play Music" search ""
-		((org-agenda-files '("~/Music/Music.org"))
+		((org-agenda-files '("~/Notes/Music.org"))
 		 (org-agenda-text-search-extra-files nil)))
 	       ("w" "Work" tags-tree "WORKITEM"))
 
@@ -287,16 +293,7 @@
 				     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
 				     ("c" "Meeting" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
 				      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
-				      :prepend t :empty-lines 1))
-
-	     ;; define music speed commands
-	     org-speed-commands-music
-	     '(("o" . (lambda ()
-			"Open media at point"
-			(let ((song-name (format "%s" (nth 4 (org-heading-components)))))
-			  (shell-command "ps aux | grep mpsyt | awk -F' ' '{print $2}' | xargs kill")
-			  (message "Streaming: %s" song-name)
-			  (call-process "mpsyt" nil 0 nil (format "/%s, add 1, vp, all" song-name)))))))
+				      :prepend t :empty-lines 1)))
 
             ;; Org-Babel tangle
             (require 'ob-tangle)
@@ -351,43 +348,7 @@
              "outlook"
              :follow '(lambda(path) (message "Outlook not available on linux"))
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
-             :help-echo "Outlook not available on this machine")
-
-            ;; These speed commands are enabled under context with property :TYPE: song
-            (defun org-speed-music (keys)
-              (when (and (bolp) (looking-at org-outline-regexp)
-                         (equal "song" (org-entry-get (point) "TYPE")))
-                (cdr (assoc keys org-speed-commands-music))))
-	    ;; Add to org-speed-command-hook
-	    (add-hook 'org-speed-command-hook 'org-speed-music)
-
-            ;; ---------------
-            ;; ORG-MUSIC
-            ;; ---------------
-
-	    (defun filter-org-headings ()
-	      "extract headings from org ast"
-	      (org-element-map (org-element-parse-buffer) 'headline
-		(lambda (hs) (org-element-property :title hs))))
-
-	    (defun play-songs-in-mpsyt (mpsyt-playlist)
-	      "enqueue first youtube result from song names in mpsyt and play"
-	      (call-process "mpsyt" nil 0 nil mpsyt-playlist))
-
-	    (defun create-mpsyt-playlist-string (songs)
-	      "format song names to send to mpsyt"
-	      (format "%s vp, all"
-		      (mapconcat #'(lambda (song) (format "/%s, add 1, " (car song))) songs " ")))
-
-	    (defun play-org-music (search-string)
-	      "create search string filtered playlist from org music library and play it in mpsyt"
-	      ;; filter songs in music library using search terms
-	      (execute-kbd-macro (kbd (format "C-c a p %s SPC +{:TYPE:\\s-+song} SPC -\"+TAGS:\"" (replace-regexp-in-string " " " SPC " search-string))))
-	      ;; write filtered playlist to org file and open
-	      (org-agenda-write "/tmp/playlist.org" t)
-	      ;; get song-name from org playlist's headings, format it to enqueue and play in mpsyt, trigger mpsyt
-	      (play-songs-in-mpsyt (create-mpsyt-playlist-string (filter-org-headings))))))
-
+             :help-echo "Outlook not available on this machine")))
 
 ;; Paraedit for lisp
 (use-package paredit
