@@ -182,6 +182,10 @@
 ;; Org-Music Mode
 (use-package org-music :load-path "~/.emacs.d/lisp/org-music.el")
 
+;; Setup Mail: mu4e, smtpmail
+(use-package setup-mail :load-path "~/.emacs.d/lisp/setup-mail.el")
+
+
 ;; ---------------
 ;; Major Packages
 ;; ---------------
@@ -276,7 +280,11 @@
 
 				     ;; Ask For Heading, then TAGS, then let user edit entry
 				     ("i" "Incoming" entry (file+headline (concat org-directory "Incoming.org") "INCOMING")
-				      "** %?\n  CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
+				      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
+
+				     ;; Ask For Heading, then TAGS, then let user edit entry
+				     ("n" "Note" entry (file+headline (concat org-directory "Incoming.org") "INCOMING")
+				      "** %U\n   %?" :prepend t :kill-buffer t)
 
 				     ;; Jumps to clocked in entry
 				     ("a" "Append to Clocked" item (clock) "\t%i %?")
@@ -348,7 +356,11 @@
              "outlook"
              :follow '(lambda(path) (message "Outlook not available on linux"))
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
-             :help-echo "Outlook not available on this machine")))
+             :help-echo "Outlook not available on this machine")
+
+	    (require 'org-contacts)
+	    (setq org-contacts-files (list "/home/linux/Scripts/Python/OrgMusic/Contacts.org"))))
+
 
 ;; Paraedit for lisp
 (use-package paredit
