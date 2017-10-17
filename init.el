@@ -94,7 +94,7 @@
 (global-set-key [f11] 'toggle-fullscreen)
 
 ;; Global Default Zoom for Work
-(global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 200)))
+(global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
 (global-set-key (kbd "C-x C-g -") '(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
 
 
@@ -179,12 +179,8 @@
 (use-package nov)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-;; Org-Music Mode
-(use-package org-music :load-path "~/.emacs.d/lisp/org-music.el")
-
 ;; Setup Mail: mu4e, smtpmail
 (use-package setup-mail :load-path "~/.emacs.d/lisp/setup-mail.el")
-
 
 ;; ---------------
 ;; Major Packages
@@ -239,24 +235,26 @@
 	     org-agenda-search-view-always-boolean t
 	     org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
 
-	     ;; Force UTF-8
+	     ;; Export backends
+	     org-export-backends '(ascii html icalendar latex md org)
 	     org-export-coding-system 'utf-8
+	     org-export-babel-evaluate nil
 
 	     ;; Include Org Modules
-	     org-modules '(org-habit)
+	     org-modules '(org-habit org-drill)
 
 	     ; Org-Habit Settings
 	     org-habit-preceding-days 30
 	     org-habit-following-days 3
 	     org-habit-graph-column 80
 
-	     ;; Custom Agenda's: Org-Music
-	     ;; this triggers search in given restricted file, but need to pass search term
+	     ;; Custom Agenda's:
 	     org-agenda-custom-commands
-	     '(("p" "Play Music" search ""
+	     '(("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
 		((org-agenda-files '("~/Notes/Music.org"))
 		 (org-agenda-text-search-extra-files nil)))
-	       ("w" "Work" tags-tree "WORKITEM"))
+	       ("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
+	       ("W" tags-tree "WORKITEM"))
 
 	     ;; Set Effort Estimates, Column View, Tags
 	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
@@ -358,9 +356,20 @@
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
              :help-echo "Outlook not available on this machine")
 
+	    ;;store org-mode links to messages
+	    (require 'org-mu4e)
+	    ;;store link to message if in header view, not to header query
+	    (setq org-mu4e-link-query-in-headers-mode nil)
+
 	    (require 'org-contacts)
 	    (setq org-contacts-files (list "/home/linux/Scripts/Python/OrgMusic/Contacts.org"))))
 
+;; Org-Music Mode
+(use-package org-music
+  :load-path "~/.emacs.d/lisp/org-music.el"
+  :mode (("Music\\.org$" . org-music-mode))
+  :diminish t
+  :config (org-mode))
 
 ;; Paraedit for lisp
 (use-package paredit
