@@ -107,11 +107,6 @@
   :defer t
   :config (browse-kill-ring-default-keybindings))
 
-(use-package undo-tree
-  :ensure t
-  :diminish undo-tree-mode
-  :config (global-undo-tree-mode))
-
 ;; Uniquify buffer names foo.c:src, foo.c:extra
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
@@ -370,14 +365,6 @@
   :mode (("Music\\.org$" . org-music-mode))
   :diminish t
   :config (org-mode))
-
-;; Paraedit for lisp
-(use-package paredit
-  :ensure t
-  :config (progn
-	    (define-key paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
-	    (define-key paredit-mode-map (kbd "M-[") 'paredit-wrap-square)
-	    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)))
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
