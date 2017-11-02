@@ -197,6 +197,7 @@
   :config (progn
 	    (setq
 	     org-log-done t
+	     org-log-into-drawer t
 	     org-reverse-note-order t
 
 	     ;; Speed Commands
@@ -463,6 +464,51 @@
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+;; use an org file to organise feeds
+(use-package elfeed-org
+  :ensure t
+  :config (progn
+	    (elfeed-org)
+	    (setq rmh-elfeed-org-files (list "~/Documents/Feed.org"))))
+
+;; elfeed helper functions
+(defun deb/elfeed-save-bury ()
+  "Wrapper to save the elfeed db to disk before burying buffer"
+  (interactive)
+  (elfeed-db-save)
+  (quit-window))
+(defun deb/elfeed-frontpage ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-frontpage"))
+(defun deb/elfeed-all ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-all"))
+(defun deb/elfeed-understand ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-understand"))
+(defun deb/elfeed-experience ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-experience"))
+(defun deb/elfeed-hack ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-hack"))
+
+(use-package elfeed
+  :ensure t
+  :init (elfeed-db-load)
+  :config (elfeed-search-update--force)
+  :bind (:map elfeed-search-mode-map
+	      ("h" . deb/elfeed-hack)
+	      ("u" . deb/elfeed-understand)
+	      ("e" . deb/elfeed-experience)
+	      ("f" . deb/elfeed-frontpage)
+	      ("A" . deb/elfeed-all)
+              ("q" . deb/elfeed-save-bury)))
 
 ;; ---------------
 ;; THEME
