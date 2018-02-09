@@ -259,7 +259,7 @@
 			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
 			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
 			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
-			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTES" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f)
+			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f) NOTE(j)
 
 	     ;; Customise Refile (C-c C-w)
 	     org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
@@ -269,31 +269,31 @@
 
 	     ;; Setup Org Capture
 	     org-default-notes-file (concat org-directory "Schedule.org")
-	     org-capture-templates '(("s" "Schedule" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+	     org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "SCHEDULE")
 				      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
 
 				     ;; Ask For Heading, then TAGS, then let user edit entry
-				     ("i" "Incoming" entry (file+headline (concat org-directory "Incoming.org") "INCOMING")
+				     ("i" "Incoming" entry (file+headline "Incoming.org" "INCOMING")
 				      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
 
 				     ;; Ask For Heading, then TAGS, then let user edit entry
-				     ("n" "Note" entry (file+headline (concat org-directory "Incoming.org") "INCOMING")
+				     ("n" "Note" entry (file+headline "Incoming.org" "INCOMING")
 				      "** %U\n   %?" :prepend t :kill-buffer t)
 
 				     ;; Jumps to clocked in entry
 				     ("a" "Append to Clocked" item (clock) "\t%i %?")
 
 				     ;; For Web/Mail Capture
-				     ("m" "Mail" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+				     ("m" "Mail" entry (file+headline "Schedule.org" "SCHEDULE")
 				      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
 
 				     ;; Create Work Entry with :Work: tag. Note capture time, location
-				     ("w" "Work" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+				     ("w" "Work" entry (file+headline "Schedule.org" "SCHEDULE")
 				      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
 				      :prepend t :kill-buffer t :empty-lines 1)
 
 				     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
-				     ("c" "Meeting" entry (file+headline (concat org-directory "Schedule.org") "SCHEDULE")
+				     ("c" "Meeting" entry (file+headline "Schedule.org" "SCHEDULE")
 				      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
 				      :prepend t :empty-lines 1)))
 
@@ -306,6 +306,7 @@
                                            (shell . t)
                                            (emacs-lisp . t)
                                            (ledger . t)
+                                           (ditaa . t)
                                            (js . t)
                                            (C . t)))
 
@@ -337,6 +338,10 @@
              :face '(:foreground "dodgerblue" :underline t))
 
             (org-link-set-parameters
+             "mu4e"
+             :face '(:foreground "dodgerblue" :underline t))
+
+            (org-link-set-parameters
              "C"
              :follow '(lambda(path) (message "Link only available on Windows"))
              :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
@@ -358,7 +363,7 @@
 	    (setq org-mu4e-link-query-in-headers-mode nil)
 
 	    (require 'org-contacts)
-	    (setq org-contacts-files (list "/home/linux/Scripts/Python/OrgMusic/Contacts.org"))))
+	    (setq org-contacts-files (list "/home/linux/Notes/Contacts.org"))))
 
 ;; Org-Music Mode
 (use-package org-music
@@ -464,12 +469,12 @@
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-;; use an org file to organise feeds
+;; organise feeds in an org file
 (use-package elfeed-org
   :ensure t
   :config (progn
 	    (elfeed-org)
-	    (setq rmh-elfeed-org-files (list "~/Documents/Feed.org"))))
+	    (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
 
 ;; elfeed helper functions
 (defun deb/elfeed-save-bury ()
