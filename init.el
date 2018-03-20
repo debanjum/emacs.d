@@ -114,7 +114,9 @@
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
 (use-package whitespace-cleanup-mode
   :ensure t
-  :init (add-hook 'python-mode-hook #'whitespace-cleanup-mode))
+  :init (progn
+	  (add-hook 'python-mode-hook #'whitespace-cleanup-mode)
+	  (add-hook 'org-mode-hook #'whitespace-cleanup-mode)))
 
 ;; Expand-Region for intelligent highlight expansion
 (use-package expand-region
@@ -253,7 +255,7 @@
 	       ("W" tags-tree "WORKITEM"))
 
 	     ;; Set Effort Estimates, Column View, Tags
-	     org-global-properties (quote (("Effort_ALL" . "0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00")))
+	     org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
 	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
 	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
 			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
@@ -368,9 +370,12 @@
 ;; Org-Music Mode
 (use-package org-music
   :load-path "~/.emacs.d/lisp/org-music.el"
-  :mode (("Music\\.org$" . org-music-mode))
-  :diminish t
-  :config (org-mode))
+  :init (progn
+	  (add-hook
+	   'org-mode-hook
+	   (lambda()
+	     (if (equal buffer-file-name (expand-file-name "~/Notes/Music.org"))
+		 (org-music-mode))))))
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
