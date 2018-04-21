@@ -107,6 +107,11 @@
   :defer t
   :config (browse-kill-ring-default-keybindings))
 
+(use-package undo-tree
+  :ensure t
+  :diminish undo-tree-mode
+  :config (global-undo-tree-mode))
+
 ;; Uniquify buffer names foo.c:src, foo.c:extra
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
@@ -167,9 +172,23 @@
 ;; Zeitgiest Integration
 (use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
+;; Company mode for Completion
+(use-package company :ensure t :defer t :diminish company-mode)
+
+;; Custom Beancount Company backend
+(use-package company-ledger
+  :load-path "~/.emacs.d/lisp/company-ledger.el"
+  :ensure company
+  :init
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'company-ledger-backend)))
+
 ;; Beancount Minor Mode
 ;; Get beancount.el from https://bitbucket.org/blais/beancount
-(use-package beancount :load-path "~/.emacs.d/lisp/beancount.el")
+(use-package beancount
+  :load-path "~/.emacs.d/lisp/beancount.el"
+  :config (progn (add-hook 'beancount-mode-hook 'company-mode)))
+
 (add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
 
 ;; Nov.el Epub Reader Mode
@@ -208,6 +227,9 @@
 	     ;; Enforce TODO dependency chains
 	     org-enforce-todo-dependencies t
 
+	     ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
+	     org-agenda-dim-blocked-tasks nil
+
 	     ;; Syntax hilighting of code blocks in Org-Babel
 	     org-src-fontify-natively t
 	     ;; Auto-indent of code blocks in Org-Babel
@@ -234,7 +256,7 @@
 	     org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
 
 	     ;; Export backends
-	     org-export-backends '(ascii html icalendar latex md org)
+	     org-export-backends '(ascii html icalendar latex md org odt)
 	     org-export-coding-system 'utf-8
 	     org-export-babel-evaluate nil
 
@@ -254,9 +276,12 @@
 	       ("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
 	       ("W" tags-tree "WORKITEM"))
 
-	     ;; Set Effort Estimates, Column View, Tags
+	     ;; Set Effort Estimates, Column View
 	     org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
 	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
+
+	     ;; Set Tags, Tag Groups and Columns Width
+	     org-tags-column -78
 	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
 			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
 			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
@@ -482,6 +507,12 @@
 	    (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
 
 ;; elfeed helper functions
+(defun elfeed-load ()
+  "Wrapper to load the elfeed db from disk before opening"
+  (interactive)
+  (elfeed-db-load)
+  (elfeed)
+  (elfeed-search-update--force))
 (defun deb/elfeed-save-bury ()
   "Wrapper to save the elfeed db to disk before burying buffer"
   (interactive)
@@ -510,8 +541,8 @@
 
 (use-package elfeed
   :ensure t
-  :init (elfeed-db-load)
-  :config (elfeed-search-update--force)
+  :defer t
+  :init (setq elfeed-db-directory "~/Notes/.elfeed")
   :bind (:map elfeed-search-mode-map
 	      ("h" . deb/elfeed-hack)
 	      ("u" . deb/elfeed-understand)
@@ -520,8 +551,10 @@
 	      ("A" . deb/elfeed-all)
               ("q" . deb/elfeed-save-bury)))
 
+(use-package elfeed-web :ensure t)
+
 ;; ---------------
-;; THEME
+;; Theme
 ;; ---------------
 
 ;; Solarized Emacs Theme @ https://github.com/bbatsov/solarized-emacs
