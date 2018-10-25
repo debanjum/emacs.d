@@ -28,6 +28,12 @@
 ;; show columns by default
 (column-number-mode)
 
+;; jump over camelCase words correctly
+(global-subword-mode)
+
+;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space. 
+(setq sentence-end-double-space nil)
+
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - Emacs")
 
@@ -39,6 +45,9 @@
 
 ;; Blank *scratch* buffer
 (setq initial-scratch-message nil)
+
+;; Garbage Collection after 20MB
+(setq gc-cons-threshold (* 20 1024 1024))
 
 ;; Make clipboard work well with X applications
 (setq x-select-enable-clipboard t)
@@ -102,19 +111,40 @@
 ;; Tools
 ;; ---------------
 
+(use-package dired
+  :bind (:map dired-mode-map
+              ("C-c C-e" . wdired-change-to-wdired-mode))
+  :init
+  (setq dired-dwim-target t
+        dired-recursive-copies 'top
+        dired-recursive-deletes 'top
+        dired-listing-switches "-alh")
+  :config
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode))
+
+(use-package which-key
+  :ensure t
+  :diminish which-key-mode
+  :init (which-key-mode))
 (use-package browse-kill-ring
   :ensure t
-  :defer t
   :config (browse-kill-ring-default-keybindings))
 
 (use-package undo-tree
   :ensure t
   :diminish undo-tree-mode
-  :config (global-undo-tree-mode))
+  :config (progn (global-undo-tree-mode 1)
+                 (setq undo-tree-visualizer-timestamps t)
+                 (setq undo-tree-visualizer-diff t)))
+
 
 ;; Uniquify buffer names foo.c:src, foo.c:extra
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
+
+;; no tabs by default. modes that really need tabs should enable
+;; indent-tabs-mode explicitly. e.g makefile-mode already does that
+(setq-default indent-tabs-mode nil)
 
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
 (use-package whitespace-cleanup-mode
@@ -169,8 +199,11 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
+;; Add user elisp load path
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
 ;; Zeitgiest Integration
-(use-package zeitgeist :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+(use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
 
 ;; Company mode for Completion
 (use-package company :ensure t :defer t :diminish company-mode)
