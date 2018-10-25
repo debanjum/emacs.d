@@ -1,11 +1,11 @@
 ;; Setup Package Managers
 (require 'package)
 (setq package-archives '())
-(add-to-list 'package-archives '("melpa" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("elpy" . "http://jorgenschaefer.github.io/packages/") t)
-(package-initialize)
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/") t)
+;(package-initialize)
 
 ;; Install use-package
 (unless (package-installed-p 'use-package)
@@ -88,9 +88,9 @@
   (interactive)
   (let ((current-value (frame-parameter nil 'fullscreen)))
     (set-frame-parameter nil 'fullscreen
-			 (if (equal 'fullboth current-value)
-			     (if (boundp 'old-fullscreen) old-fullscreen nil)
-			   (progn (setq old-fullscreen current-value) 'fullboth)))))
+                         (if (equal 'fullboth current-value)
+                             (if (boundp 'old-fullscreen) old-fullscreen nil)
+                           (progn (setq old-fullscreen current-value) 'fullboth)))))
 (global-set-key [f11] 'toggle-fullscreen)
 
 ;; Global Default Zoom for Work
@@ -133,10 +133,10 @@
   :ensure t
   :init (ido-mode 1)
   :config  (progn
-	     (setq
-	      ido-enable-flex-matching t
-	      ido-everywhere t
-	      ido-use-virtual-buffers t)))
+             (setq
+              ido-enable-flex-matching t
+              ido-everywhere t
+              ido-use-virtual-buffers t)))
 
 ;; Smex for M-x auto-completion, fuzzy-matching etc
 (use-package smex
@@ -150,13 +150,13 @@
   :init (recentf-mode t)
   :bind ("C-x C-r" . ido-recentf-open)  ;; replace `find-file-read-only` with more a useful command
   :config (progn
-	    (setq recentf-max-saved-items 50)
-	    (defun ido-recentf-open ()
-	      "Use `ido-completing-read` to `find-file` a recent file"
-	      (interactive)
-	      (if (find-file (ido-completing-read "Find recent file: " recentf-list))
-		  (message "Opening file...")
-		(message "Aborting")))))
+            (setq recentf-max-saved-items 50)
+            (defun ido-recentf-open ()
+              "Use `ido-completing-read` to `find-file` a recent file"
+              (interactive)
+              (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+                  (message "Opening file...")
+                (message "Aborting")))))
 
 ;; ag - the silver searcher
 (use-package ag
@@ -212,8 +212,8 @@
   :mode (("\\.org$" . org-mode))
   ;; Bind keys
   :bind (("C-c c" . org-capture)
-	 ("C-c l" . org-store-link)
-	 ("C-c a" . org-agenda))
+         ("C-c l" . org-store-link)
+         ("C-c a" . org-agenda))
   ;; Configure org
   :config (progn
 	    (setq
@@ -411,9 +411,9 @@
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
   :config (progn
-	    (setq
-	     elpy-test-nose-runner-command '("nosetests" "-s" "-v")
-	     elpy-test-runner 'elpy-test-nose-runner)))
+            (setq
+             elpy-test-nose-runner-command '("nosetests" "-s" "-v")
+             elpy-test-runner 'elpy-test-nose-runner)))
 
 ;; Make ipython 5.x (color)compatible with Emacs eshell
 (if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
@@ -421,9 +421,9 @@
 ;; Realgud Enhanced Debugging
 ;(use-package realgud :ensure t :defer t)
 ;(with-eval-after-load 'python (progn
-;				(load "realgud")
-;				(define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
-;				(use-package epdb :load-path "~/.emacs.d/lisp")))
+;                               (load "realgud")
+;                               (define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
+;                               (use-package epdb :load-path "~/.emacs.d/lisp")))
 ;;; EPDB Integration
 ;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
 
@@ -432,39 +432,39 @@
   :ensure t
   :defer t
   :config (progn
-	    (add-hook 'haskell-mode-hook 'intero-mode)))
+            (add-hook 'haskell-mode-hook 'intero-mode)))
 
 ;; Web-Mode for HTML
 (use-package web-mode
   :ensure t
   :mode ("\\.html\\'" . web-mode)
   :config (progn
-	    (add-hook 'web-mode-hook
-		      (lambda ()
-			(setq web-mode-enable-css-colorization t
-			      web-mode-markup-indent-offset 2
-			      web-mode-css-indent-offset 2
-			      web-mode-code-indent-offset 2
-			      web-mode-style-padding 2
-			      web-mode-script-padding 2
-			      web-mode-ac-sources-alist
-			      '(("css" . (ac-source-css-property))
-				("html" . (ac-source-words-in-buffer ac-source-abbrev))))))))
+            (add-hook 'web-mode-hook
+                      (lambda ()
+                        (setq web-mode-enable-css-colorization t
+                              web-mode-markup-indent-offset 2
+                              web-mode-css-indent-offset 2
+                              web-mode-code-indent-offset 2
+                              web-mode-style-padding 2
+                              web-mode-script-padding 2
+                              web-mode-ac-sources-alist
+                              '(("css" . (ac-source-css-property))
+                                ("html" . (ac-source-words-in-buffer ac-source-abbrev))))))))
 
 ;; Js2-Mode for Javascript
 (use-package js2-mode
   :ensure t
   :mode (("\\.js\\'" . js2-mode)
-	 ("\\.json\\'" . javascript-mode))
+         ("\\.json\\'" . javascript-mode))
   :interpreter ("node" . js2-mode)
   :commands js2-mode
   :config (progn
-	    (setq-default js2-basic-offset 2
-			  js2-indent-switch-body t
-			  js2-auto-indent-p t
-			  flycheck-disabled-checkers '(javascript-jshint)
-			  flycheck-checkers '(javascript-eslint)
-			  flycheck-eslintrc "~/.eslintrc"))
+            (setq-default js2-basic-offset 2
+                          js2-indent-switch-body t
+                          js2-auto-indent-p t
+                          flycheck-disabled-checkers '(javascript-jshint)
+                          flycheck-checkers '(javascript-eslint)
+                          flycheck-eslintrc "~/.eslintrc"))
   (add-to-list 'js2-mode-hook 'flycheck-mode 'tern-mode))
 
 ;; Tern for Javascript
@@ -480,10 +480,10 @@
   (defun latex-word-count ()
     (interactive)
     (let* ((this-file (buffer-file-name))
-	   (word-count
-	    (with-output-to-string
-	      (with-current-buffer standard-output
-		(call-process "texcount" nil t nil "-brief" this-file)))))
+           (word-count
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "texcount" nil t nil "-brief" this-file)))))
       (string-match "\n$" word-count)
       (message (replace-match "" nil nil word-count))))
     (define-key latex-mode-map "\C-cw" 'latex-word-count))
@@ -495,16 +495,16 @@
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-;; organise feeds in an org file
+;; Organise feeds in an Org file
 (use-package elfeed-org
   :ensure t
   :config (progn
-	    (elfeed-org)
-	    (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
+            (elfeed-org)
+            (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
 
 ;; elfeed helper functions
 (defun elfeed-load ()
