@@ -119,8 +119,7 @@
         dired-recursive-copies 'top
         dired-recursive-deletes 'top
         dired-listing-switches "-alh")
-  :config
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode))
+  :hook (dired-mode . dired-hide-details-mode))
 
 (use-package which-key
   :ensure t
@@ -149,9 +148,11 @@
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
 (use-package whitespace-cleanup-mode
   :ensure t
-  :init (progn
-	  (add-hook 'python-mode-hook #'whitespace-cleanup-mode)
-	  (add-hook 'org-mode-hook #'whitespace-cleanup-mode)))
+  :hook ((python-mode . whitespace-cleanup-mode)
+         (org-mode . whitespace-cleanup-mode))
+  :init (add-hook
+           'write-file-hooks
+           (lambda () (untabify (point-min) (point-max)) nil)))
 
 ;; Expand-Region for intelligent highlight expansion
 (use-package expand-region
@@ -225,8 +226,10 @@
 (add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
 
 ;; Nov.el Epub Reader Mode
-(use-package nov)
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(use-package nov
+  :ensure t
+  :ensure xml+
+  :mode ("\\.epub\\'" . nov-mode))
 
 ;; Setup Mail: mu4e, smtpmail
 (use-package setup-mail :load-path "~/.emacs.d/lisp/setup-mail.el")
@@ -464,8 +467,7 @@
 (use-package intero
   :ensure t
   :defer t
-  :config (progn
-            (add-hook 'haskell-mode-hook 'intero-mode)))
+  :hook (haskell-mode . intero-mode))
 
 ;; Web-Mode for HTML
 (use-package web-mode
@@ -498,7 +500,8 @@
                           flycheck-disabled-checkers '(javascript-jshint)
                           flycheck-checkers '(javascript-eslint)
                           flycheck-eslintrc "~/.eslintrc"))
-  (add-to-list 'js2-mode-hook 'flycheck-mode 'tern-mode))
+  :hook ((flycheck-mode . js2-mode)
+         (tern-mode .js2-mode)))
 
 ;; Tern for Javascript
 (use-package tern :ensure t :defer t)
