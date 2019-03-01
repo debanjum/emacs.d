@@ -185,9 +185,7 @@
             (defun ido-recentf-open ()
               "Use `ido-completing-read` to `find-file` a recent file"
               (interactive)
-              (if (find-file (ido-completing-read "Find recent file: " recentf-list))
-                  (message "Opening file...")
-                (message "Aborting")))))
+              (find-file (ido-completing-read "Find recent file: " recentf-list)))))
 
 ;; ag - the silver searcher
 (use-package ag
@@ -252,113 +250,140 @@
          ("C-c a" . org-agenda))
   ;; Configure org
   :config (progn
-	    (setq
-	     org-log-done t
-	     org-log-into-drawer t
-	     org-reverse-note-order t
+            (setq
+             org-log-done t
+             org-log-into-drawer t
+             org-reverse-note-order t
 
-	     ;; Speed Commands
-	     org-use-speed-commands t
+             ;; Speed Commands
+             org-use-speed-commands t
 
-	     ;; Enforce TODO dependency chains
-	     org-enforce-todo-dependencies t
+             ;; Enforce TODO dependency chains
+             org-enforce-todo-dependencies t
 
-	     ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
-	     org-agenda-dim-blocked-tasks nil
+             ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
+             org-agenda-dim-blocked-tasks nil
 
-	     ;; Syntax hilighting of code blocks in Org-Babel
-	     org-src-fontify-natively t
-	     ;; Auto-indent of code blocks in Org-Babel
-	     org-src-tab-acts-natively t
+             ;; Syntax hilighting of code blocks in Org-Babel
+             org-src-fontify-natively t
+             ;; Auto-indent of code blocks in Org-Babel
+             org-src-tab-acts-natively t
 
-	     ;; Set Org-Files for Agenda
-	     org-directory "~/Notes/"
-	     org-agenda-files (list (concat org-directory "Schedule.org"))
-	     org-archive-location (concat org-directory "Archive.org::* %s")
+             ;; Set Org-Files for Agenda
+             org-directory "~/Notes/"
+             org-agenda-files (list (concat org-directory "Schedule.org"))
+             org-archive-location (concat org-directory "Archive.org::* %s")
 
-	     ;; Mobile Org Settings
-	     org-mobile-directory "~/Dropbox/Notes/"
-	     org-mobile-files (list "Schedule.org" "Incoming.org")
-	     org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
+             ;; Mobile Org Settings
+             org-mobile-directory "~/Dropbox/Notes/"
+             org-mobile-files (list "Schedule.org" "Incoming.org")
+             org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
 
-	     ;; Org-Babel execute without confirmation
-	     org-confirm-babel-evaluate nil
+             ;; Attachments
+             org-attach-directory (concat org-directory "data")
+             org-attach-expand-link 'FILE
 
-	     ;; Org-Mode Link Search
-	     org-link-search-must-match-exact-headline nil
+             ;; Org Default File App to Open
+             org-file-apps '(("\\.mm\\'" . default)
+                             ("\\.x?html?\\'" . "firefox %s")
+                             ("\\.pdf\\'" . default)
+                             (auto-mode . emacs))
 
-	     ;; Default to Boolean Search
-	     org-agenda-search-view-always-boolean t
-	     org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
+             ;; Org-Babel execute without confirmation
+             org-confirm-babel-evaluate nil
 
-	     ;; Export backends
-	     org-export-backends '(ascii html icalendar latex md org odt)
-	     org-export-coding-system 'utf-8
-	     org-export-babel-evaluate nil
+             ;; Org-Mode Link Search
+             org-link-search-must-match-exact-headline nil
 
-	     ;; Include Org Modules
-	     org-modules '(org-habit org-drill)
+             ;; Default to Boolean Search
+             org-agenda-search-view-always-boolean t
+             org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
 
-	     ; Org-Habit Settings
-	     org-habit-preceding-days 30
-	     org-habit-following-days 3
-	     org-habit-graph-column 80
+             org-publish-project-alist
+             `(
+               ("work"
+                :base-directory "~/Notes/"
+                :base-extension "org"
+                :publishing-directory "~/Public/Workstation/"
+                :exclude ".*"
+                :include ("Schedule.org")
+                :exclude-tags ("DATALAD" "CEERI" "HH" "PERSONAL" "TRAVEL" "JobStudy")
+                :select-tags ("WORK")
+                :with-timestamps t
+                :with-tasks t
+                :with-tags t
+                :with-tables t
+                :with-priority t
+                :with-planning t
+                :publishing-function org-org-publish-to-org
+                )
+               )
 
-	     ;; Custom Agenda's:
-	     org-agenda-custom-commands
-	     '(("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
-		((org-agenda-files '("~/Notes/Music.org"))
-		 (org-agenda-text-search-extra-files nil)))
-	       ("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
-	       ("W" tags-tree "WORKITEM"))
+             ;; Include Org Modules
+             org-modules '(org-habit org-drill org-tempo)
+             org-drill-add-random-noise-to-intervals-p t ;; add random noise to repeat interval of org-drill
 
-	     ;; Set Effort Estimates, Column View
-	     org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
-	     org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
+             ; Org-Habit Settings
+             org-habit-preceding-days 30
+             org-habit-following-days 3
+             org-habit-graph-column 80
 
-	     ;; Set Tags, Tag Groups and Columns Width
-	     org-tags-column -78
-	     org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
-			     (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
-			     (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
-			     (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
-			     ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f) NOTE(j)
+             ;; Custom Agenda's:
+             org-agenda-custom-commands
+             '(("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
+                ((org-agenda-files '("~/Notes/Music.org"))
+                 (org-agenda-text-search-extra-files nil)))
+               ;;("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
+               ;;("W" tags-tree "WORKITEM")
+               )
 
-	     ;; Customise Refile (C-c C-w)
-	     org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
-	     org-outline-path-complete-in-steps t ;; use TAB for completion
-	     org-refile-targets '((nil :maxlevel . 6) ;; refile-target = depth 6 in agenda files
-				  (org-agenda-files :maxlevel . 6))
+             ;; Set Effort Estimates, Column View
+             org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
+             org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
 
-	     ;; Setup Org Capture
-	     org-default-notes-file (concat org-directory "Schedule.org")
-	     org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "SCHEDULE")
-				      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
+             ;; Set Tags, Tag Groups and Columns Width
+             org-tags-column -78
+             org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
+                             (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
+                             (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
+                             (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
+                             ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f) NOTE(j)
 
-				     ;; Ask For Heading, then TAGS, then let user edit entry
-				     ("i" "Incoming" entry (file+headline "Incoming.org" "INCOMING")
-				      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
+             ;; Customise Refile (C-c C-w)
+             org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
+             org-outline-path-complete-in-steps t ;; use TAB for completion
+             org-refile-targets '((nil :maxlevel . 4) ;; refile-target = depth 4 in agenda files
+                                  (org-agenda-files :maxlevel . 4))
 
-				     ;; Ask For Heading, then TAGS, then let user edit entry
-				     ("n" "Note" entry (file+headline "Incoming.org" "INCOMING")
-				      "** %U\n   %?" :prepend t :kill-buffer t)
+             ;; Setup Org Capture
+             org-default-notes-file (concat org-directory "Schedule.org")
+             org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "SCHEDULE")
+                                      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
 
-				     ;; Jumps to clocked in entry
-				     ("a" "Append to Clocked" item (clock) "\t%i %?")
+                                     ;; Ask For Heading, then TAGS, then let user edit entry
+                                     ("i" "Incoming" entry (file+headline "Incoming.org" "INCOMING")
+                                      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
 
-				     ;; For Web/Mail Capture
-				     ("m" "Mail" entry (file+headline "Schedule.org" "SCHEDULE")
-				      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
+                                     ;; Ask For Heading, then TAGS, then let user edit entry
+                                     ("n" "Note" entry (file+headline "Incoming.org" "INCOMING")
+                                      "** %U\n   %?" :prepend t :kill-buffer t)
 
-				     ;; Create Work Entry with :Work: tag. Note capture time, location
-				     ("w" "Work" entry (file+headline "Schedule.org" "SCHEDULE")
-				      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
-				      :prepend t :kill-buffer t :empty-lines 1)
+                                     ;; Jumps to clocked in entry
+                                     ("a" "Append to Clocked" item (clock) "\t%i %?")
 
-				     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
-				     ("c" "Meeting" entry (file+headline "Schedule.org" "SCHEDULE")
-				      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
-				      :prepend t :empty-lines 1)))
+                                     ;; For Web/Mail Capture
+                                     ("m" "Mail" entry (file+headline "Schedule.org" "SCHEDULE")
+                                      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
+
+                                     ;; Create Work Entry with :Work: tag. Note capture time, location
+                                     ("w" "Work" entry (file+headline "Schedule.org" "SCHEDULE")
+                                      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
+                                      :prepend t :kill-buffer t :empty-lines 1)
+
+                                     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
+                                     ("c" "Meeting" entry (file+headline "Schedule.org" "SCHEDULE")
+                                      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
+                                      :prepend t :empty-lines 1)))
 
             ;; Org-Babel tangle
             (require 'ob-tangle)
@@ -420,13 +445,17 @@
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
              :help-echo "Outlook not available on this machine")
 
-	    ;;store org-mode links to messages
-	    (require 'org-mu4e)
-	    ;;store link to message if in header view, not to header query
-	    (setq org-mu4e-link-query-in-headers-mode nil)
+            ;;store org-mode links to messages
+            (require 'org-mu4e)
+            ;;store link to message if in header view, not to header query
+            (setq org-mu4e-link-query-in-headers-mode nil)
 
-	    (require 'org-contacts)
-	    (setq org-contacts-files (list "/home/linux/Notes/Contacts.org"))))
+            (require 'org-contacts)
+            (setq org-contacts-files (list "/home/linux/Notes/Contacts.org"))
+
+            ;;task state dependency chaining
+            (require 'org-depend)
+
 
 ;; Org-Music Mode
 (use-package org-music
@@ -588,6 +617,12 @@
               ("q" . deb/elfeed-save-bury)))
 
 (use-package elfeed-web :ensure t)
+
+(use-package pdf-tools
+  :ensure t
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :magic-fallback ("%PDF" . pdf-view-mode)
+  :config (pdf-tools-install))
 
 ;; ---------------
 ;; Theme
