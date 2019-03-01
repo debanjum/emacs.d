@@ -397,6 +397,10 @@
                                            (ditaa . t)
                                            (js . t)
                                            (C . t)))
+            ;; Org formatted clipboard URL formatted with Title from Webpage
+            (use-package org-cliplink
+              :ensure t
+              :bind ("C-x p i" . 'org-cliplink))
 
             ;; Link to specific (git) versions of a file.
             (require 'org-git-link)
@@ -416,7 +420,10 @@
                                           ("gitlab" . "https://gitlab.com/%(gitlink)")
                                           ("google" . "https://www.google.com/search?q=%s")
                                           ("gmap"   . "https://maps.google.com/maps?q=%s")
-                                          ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")))
+                                          ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
+                                          ("vso"    . "https://o365exchange.visualstudio.com/O365%20Core/_git/Griffin/pullrequest/%s")
+                                          ("attach" . org-attach-expand-link)
+                                          ("transaction" . "file:Ledger.bean::%s")))
 
             ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
             (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
@@ -456,6 +463,11 @@
             ;;task state dependency chaining
             (require 'org-depend)
 
+
+            (defun deb/upsert-org-entry-ids ()
+              "Add/update ID of all visible entry. Useful after copying subtree to prevent duplicate ids"
+              (interactive)
+              (org-map-entries '(lambda () (org-id-get-create t))))
 
 ;; Org-Music Mode
 (use-package org-music
