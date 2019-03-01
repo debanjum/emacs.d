@@ -5,7 +5,7 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/") t)
-;(package-initialize)
+;(package-initialize)  ;; only uncomment for new install
 
 ;; Install use-package
 (unless (package-installed-p 'use-package)
@@ -204,12 +204,16 @@
 ;; Zeitgiest Integration
 (use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
 
+;; Setup Mail: mu4e, smtpmail
+(use-package setup-mail)
+
 ;; Company mode for Completion
 (use-package company :ensure t :defer t :diminish company-mode)
 
 ;; Custom Beancount Company backend
+;(use-package company-ledger :load-path "~/.emacs.d/lisp/company-ledger.el")
+;(add-to-list 'completion-at-point-functions 'transaction-completion-at-point)
 (use-package company-ledger
-  :load-path "~/.emacs.d/lisp/company-ledger.el"
   :ensure company
   :init
   (with-eval-after-load 'company
@@ -218,10 +222,8 @@
 ;; Beancount Minor Mode
 ;; Get beancount.el from https://bitbucket.org/blais/beancount
 (use-package beancount
-  :load-path "~/.emacs.d/lisp/beancount.el"
-  :config (progn (add-hook 'beancount-mode-hook 'company-mode)))
-
-(add-to-list 'auto-mode-alist '("\\.bean\\'" . beancount-mode))
+  :hook (beancount-mode . company-mode)
+  :mode ("\\.bean\\'" . beancount-mode))
 
 ;; Nov.el Epub Reader Mode
 (use-package nov
@@ -229,8 +231,10 @@
   :ensure xml+
   :mode ("\\.epub\\'" . nov-mode))
 
-;; Setup Mail: mu4e, smtpmail
-(use-package setup-mail :load-path "~/.emacs.d/lisp/setup-mail.el")
+(use-package org-randomnote
+  :ensure t
+  :bind ("C-c r" . org-randomnote)
+  :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org" "~/Notes/Bucket.org")))
 
 ;; ---------------
 ;; Major Packages
