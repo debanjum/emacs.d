@@ -236,6 +236,9 @@
   :bind ("C-c r" . org-randomnote)
   :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org" "~/Notes/Bucket.org")))
 
+
+(use-package all-the-icons :ensure t) ;; icon set
+
 ;; ---------------
 ;; Major Packages
 ;; ---------------
@@ -340,6 +343,11 @@
                ;;("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
                ;;("W" tags-tree "WORKITEM")
                )
+
+             ;; Set custom faces for categories in agenda
+             org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
+                                              ("Habit" ,(list (all-the-icons-faicon "circle-o-notch")) nil nil :ascent center)
+                                              ("" ,(list (all-the-icons-faicon "clock-o")) nil nil :ascent center))
 
              ;; Set Effort Estimates, Column View
              org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
