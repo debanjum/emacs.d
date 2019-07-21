@@ -31,7 +31,11 @@
 ;; jump over camelCase words correctly
 (global-subword-mode)
 
-;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space. 
+;; emacs buffer, window persistence
+(setq desktop-save-mode t
+      desktop-path '("."))
+
+;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space.
 (setq sentence-end-double-space nil)
 
 ;; Set current buffer name in emacs X11 window title
@@ -50,7 +54,7 @@
 (setq gc-cons-threshold (* 20 1024 1024))
 
 ;; Make clipboard work well with X applications
-(setq x-select-enable-clipboard t)
+(setq select-enable-clipboard t)
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 ;; No newlines past EOF
@@ -110,6 +114,13 @@
 ;; ---------------
 ;; Tools
 ;; ---------------
+(use-package diminish
+  :ensure t
+  :diminish auto-revert-mode
+  :diminish undo-tree-mode
+  :diminish which-key-mode
+  :diminish subword-mode
+  :diminish eldoc-mode)
 
 (use-package dired
   :bind (:map dired-mode-map
@@ -151,7 +162,7 @@
   :hook ((python-mode . whitespace-cleanup-mode)
          (org-mode . whitespace-cleanup-mode))
   :init (add-hook
-           'write-file-hooks
+           'write-file-functions
            (lambda () (untabify (point-min) (point-max)) nil)))
 
 ;; Expand-Region for intelligent highlight expansion
@@ -236,6 +247,13 @@
   :bind ("C-c r" . org-randomnote)
   :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org" "~/Notes/Bucket.org")))
 
+;; Drag and drop images/files to attach to org task
+(use-package org-download
+  :ensure t
+  :config
+  ;; add support to dired
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  (setq org-download-method 'attach))
 
 (use-package all-the-icons :ensure t) ;; icon set
 
