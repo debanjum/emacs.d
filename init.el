@@ -562,11 +562,18 @@
 (use-package org-music
   :load-path "~/.emacs.d/lisp/org-music.el"
   :init (progn
-	  (add-hook
-	   'org-mode-hook
-	   (lambda()
-	     (if (equal buffer-file-name (expand-file-name "~/Notes/Music.org"))
-		 (org-music-mode))))))
+          (setq
+           org-music-file "~/Notes/Music.org"
+           org-music-media-directory "~/Music/OrgMusic/"
+           org-music-next-cloud-script "~/Scripts/bin/nextcloud.py"
+           org-music-operating-system "linux"
+           org-music-playlist-file "orgmusic-linux.m3u"
+           org-music-cache-size 100)
+          (add-hook
+           'org-mode-hook
+           (lambda()
+             (if (equal buffer-file-name (expand-file-name org-music-file))
+                 (org-music-mode))))))
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
