@@ -136,6 +136,17 @@
   :ensure t
   :diminish which-key-mode
   :init (which-key-mode))
+
+(use-package avy
+  :ensure t
+  :init
+  (setq avy-keys-alist
+        `((avy-goto-char-timer . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i))
+          (avy-goto-line . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i))))
+  (setq avy-style 'pre)
+  :bind* (("M-m f" . avy-goto-char-timer)
+          ("M-m F" . avy-goto-line)))
+
 (use-package browse-kill-ring
   :ensure t
   :config (browse-kill-ring-default-keybindings))
@@ -242,6 +253,14 @@
   :ensure xml+
   :mode ("\\.epub\\'" . nov-mode))
 
+;; Annotation for ebooks, pdf's etc in org files
+(use-package org-noter
+  :ensure t
+  :config (progn
+            (setq
+             org-noter-auto-save-last-location t
+             org-noter-notes-search-path '("~/Notes"))))
+
 (use-package org-randomnote
   :ensure t
   :bind ("C-c r" . org-randomnote)
@@ -256,6 +275,11 @@
   (setq org-download-method 'attach))
 
 (use-package all-the-icons :ensure t) ;; icon set
+
+(use-package flycheck
+  :ensure t
+  :hook (emacs-lisp-mode . flycheck-mode)
+  :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
 ;; ---------------
 ;; Major Packages
@@ -273,6 +297,24 @@
   :bind (("C-c c" . org-capture)
          ("C-c l" . org-store-link)
          ("C-c a" . org-agenda))
+  ;; Configure before loading org.el
+  :init (progn
+          (setq
+           ;; Export backends. Needs to be set before org.el is loaded
+           org-export-backends '(ascii html icalendar latex md org odt)
+           org-export-coding-system 'utf-8
+           org-export-babel-evaluate nil
+           org-export-with-sub-superscripts nil
+
+           ;; Org-Calendar Export
+           org-icalendar-combined-agenda-file "/home/linux/Dropbox/Phone/agenda.ics"
+           org-icalendar-combined-name "Deb's Org Agenda"
+           org-icalendar-use-scheduled '(todo-start event-if-todo)
+           org-icalendar-use-deadline '(todo-due event-if-todo)
+           org-icalendar-store-UID t
+           org-icalendar-include-todo 'all
+           ))
+
   ;; Configure org
   :config (progn
             (setq
@@ -283,16 +325,14 @@
              ;; Speed Commands
              org-use-speed-commands t
 
+             ;; Allow user specified scaling of org-inline images.
+             org-image-actual-width nil
+
              ;; Enforce TODO dependency chains
              org-enforce-todo-dependencies t
 
              ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
              org-agenda-dim-blocked-tasks nil
-
-             ;; Syntax hilighting of code blocks in Org-Babel
-             org-src-fontify-natively t
-             ;; Auto-indent of code blocks in Org-Babel
-             org-src-tab-acts-natively t
 
              ;; Set Org-Files for Agenda
              org-directory "~/Notes/"
@@ -312,10 +352,15 @@
              org-file-apps '(("\\.mm\\'" . default)
                              ("\\.x?html?\\'" . "firefox %s")
                              ("\\.pdf\\'" . default)
+                             ("\\.odt\\'" . "libreoffice %s")
                              (auto-mode . emacs))
 
              ;; Org-Babel execute without confirmation
              org-confirm-babel-evaluate nil
+             ;; Syntax hilighting of code blocks
+             org-src-fontify-natively t
+             ;; Auto-indent of code blocks
+             org-src-tab-acts-natively t
 
              ;; Org-Mode Link Search
              org-link-search-must-match-exact-headline nil
@@ -345,7 +390,7 @@
                )
 
              ;; Include Org Modules
-             org-modules '(org-habit org-drill org-tempo)
+             org-modules '(org-habit org-drill)
              org-drill-add-random-noise-to-intervals-p t ;; add random noise to repeat interval of org-drill
 
              ; Org-Habit Settings
@@ -353,18 +398,23 @@
              org-habit-following-days 3
              org-habit-graph-column 80
 
+             ;; Org Agenda To-Do/Tag-Match Ignore Scheduled/Deadlined Tasks
+             ;; Allows view of "non-assigned/processed" tasks
+             org-agenda-todo-ignore-scheduled 'all
+             org-agenda-todo-ignore-deadlines 'all
+             org-agenda-tags-todo-honor-ignore-options t
+
              ;; Custom Agenda's:
              org-agenda-custom-commands
              '(("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
                 ((org-agenda-files '("~/Notes/Music.org"))
                  (org-agenda-text-search-extra-files nil)))
-               ;;("w" tags-tree "+WORK-DATALAD-CEERI-HH-JobStudy-PERSONAL-TRAVEL")
-               ;;("W" tags-tree "WORKITEM")
                )
 
              ;; Set custom faces for categories in agenda
              org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
                                               ("Habit" ,(list (all-the-icons-faicon "circle-o-notch")) nil nil :ascent center)
+                                              ("Music" ,(list (all-the-icons-faicon "youtube-play")) nil nil :ascent center)
                                               ("" ,(list (all-the-icons-faicon "clock-o")) nil nil :ascent center))
 
              ;; Set Effort Estimates, Column View
@@ -422,6 +472,7 @@
             (org-babel-do-load-languages 'org-babel-load-languages
                                          '((python . t)
                                            (shell . t)
+                                           (sudo . t)  ;; ob-sudo. try sudo in babel instead of using :dir "sudo::/path/to/dir"
                                            (emacs-lisp . t)
                                            (ledger . t)
                                            (ditaa . t)
@@ -493,6 +544,14 @@
             ;;task state dependency chaining
             (require 'org-depend)
 
+            (use-package org-mime :ensure t)
+            (defun htmlize-and-send ()
+              "When in an org-mu4e-compose-org-mode message, htmlize and send it."
+              (interactive)
+              (when (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+                (org-mime-htmlize)
+                (message-send-and-exit)))
+            (add-hook 'org-ctrl-c-ctrl-c-hook 'htmlize-and-send t)
 
             (defun deb/upsert-org-entry-ids ()
               "Add/update ID of all visible entry. Useful after copying subtree to prevent duplicate ids"
