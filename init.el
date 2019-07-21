@@ -668,6 +668,7 @@
 ;; Organise feeds in an Org file
 (use-package elfeed-org
   :ensure t
+  :defer t
   :config (progn
             (elfeed-org)
             (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
@@ -676,18 +677,18 @@
 (defun elfeed-load ()
   "Wrapper to load the elfeed db from disk before opening"
   (interactive)
-  (elfeed-db-load)
+  ;(elfeed-db-load)
   (elfeed)
-  (elfeed-search-update--force))
+  (elfeed-search-update :force))
+(defun deb/elfeed-frontpage ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-frontpage"))
 (defun deb/elfeed-save-bury ()
   "Wrapper to save the elfeed db to disk before burying buffer"
   (interactive)
   (elfeed-db-save)
   (quit-window))
-(defun deb/elfeed-frontpage ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-frontpage"))
 (defun deb/elfeed-all ()
   (interactive)
   (bookmark-maybe-load-default-file)
@@ -704,26 +705,113 @@
   (interactive)
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-hack"))
+(defun deb/elfeed-listen ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-listen"))
+
+(defun elfeed-junk-filter (entry)
+  (when (or (string-match "thestranger" (elfeed-entry-link entry))
+            (string-match "ycombinator" (elfeed-entry-link entry)))
+    (let ((title (elfeed-entry-title entry))
+          (content (elfeed-deref (elfeed-entry-content entry)))
+          (trump "\\<trump\\>")
+          (case-fold-search t))
+      (unless (or (string-match trump title)
+                  (string-match trump content))
+        (elfeed-tag entry 'junk)))))
+
+(add-hook 'elfeed-new-entry-hook #'elfeed-junk-filter)
 
 (use-package elfeed
   :ensure t
   :defer t
   :init (setq elfeed-db-directory "~/Notes/.elfeed")
   :bind (:map elfeed-search-mode-map
-	      ("h" . deb/elfeed-hack)
-	      ("u" . deb/elfeed-understand)
-	      ("e" . deb/elfeed-experience)
-	      ("f" . deb/elfeed-frontpage)
-	      ("A" . deb/elfeed-all)
+              ("h" . deb/elfeed-hack)
+              ("u" . deb/elfeed-understand)
+              ("e" . deb/elfeed-experience)
+              ("f" . deb/elfeed-frontpage)
+              ("l" . deb/elfeed-listen)
+              ("A" . deb/elfeed-all)
               ("q" . deb/elfeed-save-bury)))
 
-(use-package elfeed-web :ensure t)
+(use-package elfeed-web :ensure t :defer t)
 
-(use-package pdf-tools
+;; EMMS - Emacs Media Player
+(use-package emms
   :ensure t
-  :mode ("\\.pdf\\'" . pdf-view-mode)
-  :magic-fallback ("%PDF" . pdf-view-mode)
-  :config (pdf-tools-install))
+  :defer t
+  :bind
+  (("C-c e SPC" . emms-pause)
+   ("C-c e j" . emms-previous)
+   ("C-c e k" . emms-next)
+   ("C-c e h" . emms-seek-backward)
+   ("C-c e l" . emms-seek-forward)
+   ("C-c e n" . emms-volume-lower)
+   ("C-c e i" . emms-volume-raise))
+  :config
+  (progn
+    (emms-all)
+    ;(emms-history-load)
+    (setq emms-player-list (list emms-player-mpv)
+          emms-source-file-default-directory (expand-file-name "~/Music")
+          emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
+          emms-browser-covers 'emms-browser-cache-thumbnail
+          emms-playlist-buffer-name "*Music Playlist*"
+          emms-playlist-mode-open-playlists t
+          emms-player-mpv-parameters (append
+                                      emms-player-mpv-parameters
+                                      '("--ytdl-format=bestaudio")))
+
+    (add-to-list 'emms-info-functions 'emms-info-cueinfo)
+
+    (if (executable-find "emms-print-metadata")
+        (progn
+          (require 'emms-info-libtag)
+          (add-to-list 'emms-info-functions 'emms-info-libtag)
+                (delete 'emms-info-ogginfo emms-info-functions)
+                (delete 'emms-info-mp3info emms-info-functions))
+      (add-to-list 'emms-info-functions 'emms-info-ogginfo)
+      (add-to-list 'emms-info-functions 'emms-info-mp3info))
+
+    (defun ambrevar/emms-play-on-add (old-pos)
+      "Play tracks when calling `emms-browser-add-tracks' if nothing
+       is currently playing."
+      (interactive)
+      (when (or (not emms-player-playing-p)
+                emms-player-paused-p
+                emms-player-stopped-p)
+        (with-current-emms-playlist
+          (goto-char old-pos)
+          ;; if we're sitting on a group name, move forward
+          (unless (emms-playlist-track-at (point))
+            (emms-playlist-next))
+          (emms-playlist-select (point)))
+        (emms-stop)
+        (emms-start)))
+    (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)))
+
+;;    ;; Show the current track each time EMMS
+;;      (add-hook 'emms-player-started-hook 'emms-show)
+;;     (setq emms-show-format "Playing: %s")
+;; 
+;;     ;; Icon setup.
+;;     (setq emms-mode-line-icon-before-format "["
+;;           emms-mode-line-format " %s]"
+;;           emms-playing-time-display-format "%s ]"
+;;           emms-mode-line-icon-color "lightgrey")
+;;     (setq global-mode-string '("" emms-mode-line-string " " emms-playing-time-string))
+;;     (defun emms-mode-line-icon-function ()
+;;       (concat
+;;        " "
+;;        emms-mode-line-icon-before-format
+;;        (propertize "NP:" 'display emms-mode-line-icon-image-cache)
+;;        (format emms-mode-line-format
+;;                (emms-track-get
+;;                 (emms-playlist-current-selected-track)
+;;                 'info-title))))))
+
 
 ;; ---------------
 ;; Theme
