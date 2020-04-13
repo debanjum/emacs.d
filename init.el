@@ -296,6 +296,20 @@
   :hook (emacs-lisp-mode . flycheck-mode)
   :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
+(use-package ruby-mode
+  :ensure t
+  :mode "\\.rb\\'")
+
+(use-package sonic-pi
+  :ensure t
+  :config
+  (add-hook
+   'sonic-pi-mode-hook
+   (lambda ()
+     ;; This setq can go here instead if you wish
+     (setq sonic-pi-path "/usr/lib/sonic-pi/")
+     (setq sonic-pi-server-bin "server/bin/sonic-pi-server.rb"))))
+
 ;; ---------------
 ;; Major Packages
 ;; ---------------
