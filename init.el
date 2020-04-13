@@ -242,6 +242,10 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
+;; Orgit: Support for Org links to Magit buffers
+(use-package orgit
+  :ensure t)
+
 ;; Add user elisp load path
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
