@@ -385,6 +385,10 @@
              ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
              org-agenda-dim-blocked-tasks nil
 
+             ;; Allow multiple agenda views to be visible at same time
+             ;; Show existing agenda buffers instead of generating new ones every time
+             org-agenda-sticky t
+
              ;; Set Org-Files for Agenda
              org-directory "~/Notes/"
              org-agenda-files (list (concat org-directory "Schedule.org"))
