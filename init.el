@@ -96,6 +96,14 @@
     (backward-kill-word arg)))
 (global-set-key (kbd "C-w") 'backward-kill-word-or-kill-region)
 
+(defun yank-replace-rectangle (start end)
+  "Similar like yank-rectangle, but deletes selected rectangle first."
+  (interactive "r")
+  (delete-rectangle start end)
+  (pop-to-mark-command)
+  (yank-rectangle))
+(global-set-key (kbd "C-x r C-y") 'yank-replace-rectangle)
+
 ;; Fullscreen
 (defun toggle-fullscreen (&optional f)
   (interactive)
