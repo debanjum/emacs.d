@@ -189,6 +189,13 @@
   :ensure t
   :bind ("C-=" . er/expand-region))
 
+;; Faster window switching
+(use-package ace-window
+  :ensure t
+  :bind (("C-x o" . ace-window))
+  :config (progn
+            (setq aw-keys '(?a ?s ?k ?l ?d ?j ?h ?f ?g))))
+
 ;; Ido for file/buffer/../ auto-completion, fuzzy-matching etc
 (use-package ido
   :ensure t
