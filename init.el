@@ -820,6 +820,10 @@
   (interactive)
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-listen"))
+(defun deb/elfeed-watch ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-watch"))
 
 (defun elfeed-junk-filter (entry)
   (when (or (string-match "thestranger" (elfeed-entry-link entry))
@@ -844,6 +848,7 @@
               ("e" . deb/elfeed-experience)
               ("f" . deb/elfeed-frontpage)
               ("l" . deb/elfeed-listen)
+              ("w" . deb/elfeed-watch)
               ("A" . deb/elfeed-all)
               ("q" . deb/elfeed-save-bury)))
 
