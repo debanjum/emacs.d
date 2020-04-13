@@ -312,7 +312,7 @@
            org-export-backends '(ascii html icalendar latex md org odt)
            org-export-coding-system 'utf-8
            org-export-babel-evaluate nil
-           org-export-with-sub-superscripts nil
+           org-export-with-sub-superscripts nil  ; _, ^ aren't exported to sub/superscript
 
            ;; Org-Calendar Export
            org-icalendar-combined-agenda-file "/home/linux/Dropbox/Phone/agenda.ics"
@@ -434,7 +434,7 @@
              org-tag-alist '((:startgroup . nil) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup . nil) ; { @WORK(o) @HOME(m) @COMMUTE(c) }
                              (:startgroup . nil) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup . nil) ; { HACK(h) UNDERSTAND(u) EXPERIENCE(e) }
                              (:startgroup . nil) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup . nil) ; { TRY(t) MAINTAIN(n) FIX(x) UPGRADE(r) }
-                             (:startgroup . nil) ("PERSONAL" . ?p) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) SOCIAL(s) WORK(w) TOOLS(g)}
+                             (:startgroup . nil) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup . nil) ;{ PERSONAL(p) ENVIRONMENT(v) SOCIAL(s) WORK(w) TOOLS(g)}
                              ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j)) ; CALL(a) BUY(y) IDLE(d) HEALTH(l) FINANCE(f) NOTE(j)
 
              ;; Customise Refile (C-c C-w)
