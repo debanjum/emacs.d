@@ -371,6 +371,11 @@
                              (auto-mode . emacs))
 
              ;; Org-Babel execute without confirmation
+
+             ;; Org-Babel
+             ;; set cider as org babel clojure backend
+             org-babel-clojure-backend 'cider
+             ;; execute without confirmation
              org-confirm-babel-evaluate nil
              ;; Syntax hilighting of code blocks
              org-src-fontify-natively t
@@ -482,6 +487,8 @@
 
             ;; Org-Babel tangle
             (require 'ob-tangle)
+            (require 'ob-clojure)
+            (require 'cider)
 
             ;; Setup Babel languages. Can now do Literate Programming
             (org-babel-do-load-languages 'org-babel-load-languages
@@ -491,8 +498,21 @@
                                            (emacs-lisp . t)
                                            (ledger . t)
                                            (ditaa . t)
+                                           (clojure . t)
                                            (js . t)
                                            (C . t)))
+            (use-package ob-tmux
+              :ensure t
+              :custom
+              (org-babel-default-header-args:tmux
+               '((:results . "silent")     ;
+                 (:session . "default")    ; The default tmux session to send code to
+                 (:socket  . nil)          ; The default tmux socket to communicate with
+                 (:terminal . "zsh")))
+              ;; The tmux sessions are prefixed with the following string.
+              ;; You can customize this if you like.
+              (org-babel-tmux-session-prefix ""))
+
             ;; Org formatted clipboard URL formatted with Title from Webpage
             (use-package org-cliplink
               :ensure t
@@ -614,6 +634,35 @@
 ;                               (use-package epdb :load-path "~/.emacs.d/lisp")))
 ;;; EPDB Integration
 ;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+
+;; Clojure
+(use-package clojure-mode
+  :ensure t
+  :hook (clojure-mode . eldoc-mode)
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.edn\\'" . clojure-mode)))
+
+(use-package cider
+  :ensure t
+  :defer t
+  :hook (cider-mode . eldoc-mode)
+  :init (add-hook 'cider-mode-hook #'clj-refactor-mode)
+  :diminish subword-mode
+  :config
+  (setq nrepl-log-messages t
+        cider-repl-display-in-current-window t
+        cider-repl-use-clojure-font-lock t
+        ; cider-prompt-save-file-on-load 'always-save
+        cider-font-lock-dynamically '(macro core function var)
+        nrepl-hide-special-buffers t
+        cider-overlays-use-font-lock t)
+  (cider-repl-toggle-pretty-printing))
+
+(use-package clj-refactor
+  :defer t
+  :ensure t
+  :diminish clj-refactor-mode
+  :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
 ;; Intero for Haskell
 (use-package intero
