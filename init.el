@@ -508,31 +508,31 @@
 
              ;; Setup Org Capture
              org-default-notes-file (concat org-directory "Schedule.org")
-             org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "SCHEDULE")
+             org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "PROJECTS")
                                       "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
 
                                      ;; Ask For Heading, then TAGS, then let user edit entry
-                                     ("i" "Incoming" entry (file+headline "Incoming.org" "INCOMING")
+                                     ("i" "Incoming" entry (file+headline "Incoming.org" "RESOURCES")
                                       "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
 
                                      ;; Ask For Heading, then TAGS, then let user edit entry
-                                     ("n" "Note" entry (file+headline "Incoming.org" "INCOMING")
+                                     ("n" "Note" entry (file+headline "Incoming.org" "RESOURCES")
                                       "** %U\n   %?" :prepend t :kill-buffer t)
 
                                      ;; Jumps to clocked in entry
                                      ("a" "Append to Clocked" item (clock) "\t%i %?")
 
                                      ;; For Web/Mail Capture
-                                     ("m" "Mail" entry (file+headline "Schedule.org" "SCHEDULE")
-                                      "** TODO \n   CAPTURED: %U\n   LOCATION: %?\n" :prepend t :empty-lines 1)
+                                     ("m" "Mail" entry (file+headline "Schedule.org" "PROJECTS")
+                                      "** TODO %^{Title} :WEB:READ:\n   CAPTURED: %U\n   %?" :prepend t :empty-lines 1)
 
                                      ;; Create Work Entry with :Work: tag. Note capture time, location
-                                     ("w" "Work" entry (file+headline "Schedule.org" "SCHEDULE")
+                                     ("w" "Work" entry (file+headline "Schedule.org" "PROJECTS")
                                       "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
                                       :prepend t :kill-buffer t :empty-lines 1)
 
                                      ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
-                                     ("c" "Meeting" entry (file+headline "Schedule.org" "SCHEDULE")
+                                     ("c" "Meeting" entry (file+headline "Schedule.org" "PROJECTS")
                                       "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
                                       :prepend t :empty-lines 1)))
 
