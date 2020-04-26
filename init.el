@@ -790,16 +790,15 @@
 ;; Organise feeds in an Org file
 (use-package elfeed-org
   :ensure t
-  :defer t
   :config (progn
             (elfeed-org)
-            (setq rmh-elfeed-org-files (list "~/Notes/Feed.org"))))
+            (setq rmh-elfeed-org-files (list (expand-file-name "~/Notes/Feed.org")))))
 
 ;; elfeed helper functions
 (defun elfeed-load ()
   "Wrapper to load the elfeed db from disk before opening"
   (interactive)
-  ;(elfeed-db-load)
+  (elfeed-db-load) ;; this was commented earlier due to strange behavior
   (elfeed)
   (elfeed-search-update :force))
 (defun deb/elfeed-frontpage ()
