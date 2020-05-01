@@ -719,7 +719,17 @@
 (use-package intero
   :ensure t
   :defer t
-  :hook (haskell-mode . intero-mode))
+  :init (progn
+          (setq intero-blacklist (list (expand-file-name "~/Scripts/AlgoMusic/Tidal/"))) ;; Don't Load Intero for Tidal
+          (add-hook 'haskell-mode-hook 'intero-mode-blacklist)))
+
+;; Tidal for Live Coding Music in Haskell
+(use-package tidal
+  :ensure t
+  :config (progn
+            (setq
+             tidal-boot-script-path
+             (expand-file-name "~/.cabal/share/x86_64-linux-ghc-8.0.2/tidal-1.4.9/BootTidal.hs"))))
 
 ;; Web-Mode for HTML
 (use-package web-mode
