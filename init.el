@@ -265,7 +265,7 @@
 ;    (add-to-list 'company-backends 'company-tabnine)))
 
 ;; Custom Beancount Company backend
-;(use-package company-ledger :load-path "~/.emacs.d/lisp/company-ledger.el")
+;(use-package company-ledger :load-path "lisp/company-ledger.el")
 ;(add-to-list 'completion-at-point-functions 'transaction-completion-at-point)
 (use-package company-ledger
   :ensure company
@@ -672,9 +672,14 @@
               (interactive)
               (org-map-entries '(lambda () (org-id-get-create t))))
 
+
+;; My Org Blog Setup
+(use-package blog
+  :load-path "lisp/blog.el")
+
 ;; Org-Music Mode
 (use-package org-music
-  :load-path "~/.emacs.d/lisp/org-music.el"
+  :load-path "lisp/org-music.el"
   :init (progn
           (setq
            org-music-file "~/Notes/Music.org"
@@ -710,9 +715,9 @@
 ;(with-eval-after-load 'python (progn
 ;                               (load "realgud")
 ;                               (define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
-;                               (use-package epdb :load-path "~/.emacs.d/lisp")))
+;                               (use-package epdb :load-path "lisp")))
 ;;; EPDB Integration
-;(use-package epdb :load-path "~/.emacs.d/lisp/")  ;; not portable, but doesn't block/fail emacs load
+;(use-package epdb :load-path "lisp")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Clojure
 (use-package clojure-mode
