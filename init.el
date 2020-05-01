@@ -441,7 +441,6 @@
 
              ;; Attachments
              org-attach-directory (concat org-directory "data")
-             org-attach-expand-link 'FILE
 
              ;; Org Default File App to Open
              org-file-apps '(("\\.mm\\'" . default)
@@ -618,7 +617,7 @@
                                           ("gmap"   . "https://maps.google.com/maps?q=%s")
                                           ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
                                           ("vso"    . "https://o365exchange.visualstudio.com/O365%20Core/_git/Griffin/pullrequest/%s")
-                                          ("attach" . org-attach-expand-link)
+                                          ("attachment" . org-attach-expand-link)
                                           ("transaction" . "file:Ledger.bean::%s")))
 
             ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
