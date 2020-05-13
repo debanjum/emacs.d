@@ -39,6 +39,8 @@
 ;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space.
 (setq sentence-end-double-space nil)
 
+;(setq search-whitespace-regexp ".*?")
+
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - Emacs")
 
