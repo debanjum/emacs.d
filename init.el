@@ -432,6 +432,9 @@
              ;; Allow user specified scaling of org-inline images.
              org-image-actual-width nil
 
+             ;; Prevent invisible edits and show region
+             org-catch-invisible-edits 'show-and-error
+
              ;; Enforce TODO dependency chains
              org-enforce-todo-dependencies t
 
