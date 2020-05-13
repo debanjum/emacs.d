@@ -185,6 +185,7 @@
 (use-package undo-tree
   :ensure t
   :diminish undo-tree-mode
+  :chords (("uu" . undo-tree-visualize))
   :config (progn (global-undo-tree-mode 1)
                  (setq undo-tree-visualizer-timestamps t)
                  (setq undo-tree-visualizer-diff t)))
@@ -238,6 +239,7 @@
 (use-package counsel
   :after (ivy use-package-chords)
   :diminish
+  :chords (("yy" . counsel-yank-pop))
   :config (progn
             (counsel-mode)))
 
