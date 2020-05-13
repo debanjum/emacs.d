@@ -249,6 +249,12 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
+;; Magit Find File
+(use-package magit-find-file
+  :ensure t
+  :bind ("C-c p" . magit-find-file-completing-read)
+  :config (setq magit-completing-read-function 'ivy-completing-read))
+
 ;; Orgit: Support for Org links to Magit buffers
 (use-package orgit
   :ensure t)
