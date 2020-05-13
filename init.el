@@ -231,6 +231,13 @@
               (interactive)
               (find-file (ido-completing-read "Find recent file: " recentf-list)))))
 
+;; To keep GNU ELPA Keyring up-to-date
+(use-package gnu-elpa-keyring-update
+  :ensure t)
+
+;; Gnuplot for Plotting in org
+(use-package gnuplot :ensure t)
+
 ;; ag - the silver searcher
 (use-package ag
   :ensure t
@@ -696,6 +703,10 @@
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
+
+;; Try evil for modal navigation, editing
+(use-package evil :ensure t)
+;(use-package evil-org :ensure t)
 
 ;; Elpy for Python
 (use-package elpy
