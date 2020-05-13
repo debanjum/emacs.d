@@ -129,7 +129,8 @@
   :diminish undo-tree-mode
   :diminish which-key-mode
   :diminish subword-mode
-  :diminish eldoc-mode)
+  :diminish eldoc-mode
+  :diminish ivy-mode)
 
 (eval-after-load 'flycheck
   '(diminish 'flycheck-mode))
@@ -204,10 +205,24 @@
   :config (progn
             (setq aw-keys '(?a ?s ?k ?l ?d ?j ?h ?f ?g))))
 
+;; Ivy for completion function everywhere where ido isn't used (for now)
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :init (ivy-mode 1)
+  :config (progn
+            (setq
+;;              ivy-use-virtual-buffers t
+              ivy-count-format ""
+              ivy-initial-inputs-alist nil
+              ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                      (t      . ivy--regex-fuzzy)))))
+
 ;; Ido for file/buffer/../ auto-completion, fuzzy-matching etc
 (use-package ido
   :ensure t
   :init (ido-mode 1)
+  :bind (("C-x b" . ido-switch-buffer))
   :config  (progn
              (setq
               ido-enable-flex-matching t
