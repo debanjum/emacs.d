@@ -118,6 +118,8 @@
 (global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
 (global-set-key (kbd "C-x C-g -") '(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
 
+;; Puts custom-set-variables into a separate temporary file
+(setq custom-file (make-temp-file "emacs-custom"))
 
 ;; ---------------
 ;; Tools
@@ -1009,27 +1011,6 @@
         (emms-start)))
     (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)))
 
-;;    ;; Show the current track each time EMMS
-;;      (add-hook 'emms-player-started-hook 'emms-show)
-;;     (setq emms-show-format "Playing: %s")
-;; 
-;;     ;; Icon setup.
-;;     (setq emms-mode-line-icon-before-format "["
-;;           emms-mode-line-format " %s]"
-;;           emms-playing-time-display-format "%s ]"
-;;           emms-mode-line-icon-color "lightgrey")
-;;     (setq global-mode-string '("" emms-mode-line-string " " emms-playing-time-string))
-;;     (defun emms-mode-line-icon-function ()
-;;       (concat
-;;        " "
-;;        emms-mode-line-icon-before-format
-;;        (propertize "NP:" 'display emms-mode-line-icon-image-cache)
-;;        (format emms-mode-line-format
-;;                (emms-track-get
-;;                 (emms-playlist-current-selected-track)
-;;                 'info-title))))))
-
-
 ;; ---------------
 ;; Theme
 ;; ---------------
@@ -1039,54 +1020,11 @@
 (use-package solarized-theme
   :ensure t
   :init (progn
-	  ;; Don't change size of org-mode headlines (but keep other size-changes)
-	  (setq solarized-scale-org-headlines nil)
-	  ;; Don't change the font for some headings and titles
-	  (setq solarized-use-variable-pitch nil))
+          ;; Don't change size of org-mode headlines (but keep other size-changes)
+          (setq solarized-scale-org-headlines nil)
+          ;; Don't change the font for some headings and titles
+          (setq solarized-use-variable-pitch nil))
   :config (progn
-	    (load "solarized-theme-autoloads" nil t)
-	    (load-theme 'solarized-light t)))
- '(org-vcard-default-version "3.0")
- '(org-vcard-include-import-unknowns nil)
-         ("3.0"
-          (("ADDRESS" . "ADR")
-           ("ADDRESS_HOME" . "ADR;TYPE=home")
-           ("ADDRESS_WORK" . "ADR;TYPE=work")
-           ("ALIAS" . "NICKNAME")
-           ("BIRTHDAY" . "BDAY")
-           ("CATEGORIES" . "CATEGORIES")
-           ("CELL" . "TEL;TYPE=cell")
-           ("CELL_HOME" . "TEL;TYPE=cell,home")
-           ("CELL_WORK" . "TEL;TYPE=cell,work")
-           ("EMAIL" . "EMAIL")
-           ("EMAIL_PREF" . "EMAIL;TYPE=pref")
-           ("EMAIL_PREF_HOME" . "EMAIL;TYPE=pref,home")
-           ("EMAIL_INTERNET" . "EMAIL;TYPE=x-internet")
-           ("EMAIL_HOME" . "EMAIL;TYPE=home")
-           ("EMAIL_WORK" . "EMAIL;TYPE=work")
-           ("FAX" . "TEL;TYPE=fax")
-           ("FAX_HOME" . "TEL;TYPE=fax,home")
-           ("FAX_WORK" . "TEL;TYPE=fax,work")
-           ("ICON" . "PHOTO")
-           ("IMPP" . "IMPP")
-           ("IMPP_HOME" . "IMPP;TYPE=home")
-           ("IMPP_WORK" . "IMPP;TYPE=work")
-           ("LANDLINE" . "TEL;TYPE=voice")
-           ("LANDLINE_HOME" . "TEL;TYPE=voice,home")
-           ("LANDLINE_WORK" . "TEL;TYPE=voice,work")
-           ("MOBILE" . "TEL;TYPE=cell")
-           ("MOBILE_HOME" . "TEL;TYPE=cell,home")
-           ("MOBILE_WORK" . "TEL;TYPE=cell,work")
-           ("N" . "N")
-           ("NICKNAME" . "NICKNAME")
-           ("NOTE" . "NOTE")
-           ("ORG" . "ORG")
-           ("PHONE" . "TEL")
-           ("PHONE" . "TEL;TYPE=voice")
-           ("PHONE_HOME" . "TEL;TYPE=voice,home")
-           ("PHONE_WORK" . "TEL;TYPE=voice,work")
-           ("PHOTO" . "PHOTO")
-           ("ROLE" . "ROLE")
-           ("TITLE" . "TITLE")
-           ("URL" . "URL")
-           ("VERSION" . "VERSION")))
+            (load "solarized-theme-autoloads" nil t)
+            (load-theme 'solarized-light t)))
+
