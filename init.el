@@ -96,6 +96,16 @@
     (backward-kill-word arg)))
 (global-set-key (kbd "C-w") 'backward-kill-word-or-kill-region)
 
+;; M-w to yank line if no active region selected
+(defun slick-copy (beg end)
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (message "Copied line")
+     (list (line-beginning-position) (line-beginning-position 2)))))
+
+(advice-add 'kill-ring-save :before #'slick-copy)
+
 (defun yank-replace-rectangle (start end)
   "Similar like yank-rectangle, but deletes selected rectangle first."
   (interactive "r")
