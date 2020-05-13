@@ -160,6 +160,12 @@
         dired-listing-switches "-alh")
   :hook (dired-mode . dired-hide-details-mode))
 
+;; Allow defining keybinding chords via use-package
+(use-package use-package-chords
+  :ensure t
+  :config
+  (key-chord-mode 1))
+
 (use-package which-key
   :ensure t
   :diminish which-key-mode
