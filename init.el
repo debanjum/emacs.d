@@ -355,7 +355,6 @@
 
 (use-package flycheck
   :ensure t
-  :hook (emacs-lisp-mode . flycheck-mode)
   :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
 (use-package ruby-mode
@@ -796,8 +795,7 @@
                           flycheck-disabled-checkers '(javascript-jshint)
                           flycheck-checkers '(javascript-eslint)
                           flycheck-eslintrc "~/.eslintrc"))
-  :hook ((flycheck-mode . js2-mode)
-         (tern-mode .js2-mode)))
+  :hook (tern-mode .js2-mode))
 
 ;; Tern for Javascript
 (use-package tern :ensure t :defer t)
