@@ -157,10 +157,11 @@
   :init
   (setq avy-keys-alist
         `((avy-goto-char-timer . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i))
-          (avy-goto-line . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i))))
-  (setq avy-style 'pre)
+          (avy-goto-line . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i)))
+        avy-style 'pre)
   :bind* (("M-m f" . avy-goto-char-timer)
-          ("M-m F" . avy-goto-line)))
+          ("M-m F" . avy-goto-line)
+          (:map isearch-mode-map ("C-'" . avy-isearch))))
 
 (use-package browse-kill-ring
   :ensure t
@@ -684,6 +685,7 @@
               "Add/update ID of all visible entry. Useful after copying subtree to prevent duplicate ids"
               (interactive)
               (org-map-entries '(lambda () (org-id-get-create t))))
+            ))
 
 
 ;; My Org Blog Setup
