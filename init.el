@@ -516,7 +516,11 @@
                              ("\\.odt\\'" . "libreoffice %s")
                              (auto-mode . emacs))
 
-             ;; Org-Babel execute without confirmation
+             mailcap-user-mime-data '(
+               ("vnd\\.oasis\\.opendocument\\.text"
+                (viewer . "libreoffice %s")
+                (type . "application/vnd\\.oasis\\.opendocument\\.text")
+                (test . t)))
 
              ;; Org-Babel
              ;; set cider as org babel clojure backend
