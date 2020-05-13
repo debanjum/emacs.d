@@ -182,10 +182,6 @@
           ("M-m F" . avy-goto-line)
           (:map isearch-mode-map ("C-'" . avy-isearch))))
 
-(use-package browse-kill-ring
-  :ensure t
-  :config (browse-kill-ring-default-keybindings))
-
 (use-package undo-tree
   :ensure t
   :diminish undo-tree-mode
@@ -226,31 +222,34 @@
 ;; Ivy for completion function everywhere where ido isn't used (for now)
 (use-package ivy
   :ensure t
-  :diminish ivy-mode
-  :init (ivy-mode 1)
+  :diminish
+  :bind (("C-c C-r" . ivy-resume))
   :config (progn
+            (ivy-mode)
             (setq
-;;              ivy-use-virtual-buffers t
-              ivy-count-format ""
-              ivy-initial-inputs-alist nil
-              ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                                      (t      . ivy--regex-fuzzy)))))
+             ivy-use-virtual-buffers t
+             enable-recursive-minibuffers t
+             ivy-count-format ""
+             ivy-initial-inputs-alist nil
+             ivy-sort-matches-functions-alist '((t . nil)) ;; To sort most recent first
+             ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                     (t      . ivy--regex-fuzzy)))))
 
-;; Ido for file/buffer/../ auto-completion, fuzzy-matching etc
-(use-package ido
-  :ensure t
-  :init (ido-mode 1)
-  :bind (("C-x b" . ido-switch-buffer))
-  :config  (progn
-             (setq
-              ido-enable-flex-matching t
-              ido-everywhere t
-              ido-use-virtual-buffers t)))
+(use-package counsel
+  :after (ivy use-package-chords)
+  :diminish
+  :config (progn
+            (counsel-mode)))
+
+(use-package swiper
+  :after ivy
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)))
 
 ;; Smex for M-x auto-completion, fuzzy-matching etc
+;; Need to keep it as it's used by counsel-M-x for suggestion ranking
 (use-package smex
   :ensure t
-  :bind (("M-x" . smex))
   :config (smex-initialize))
 
 ;; Recentf to suggest recently opened files on C-x C-r
