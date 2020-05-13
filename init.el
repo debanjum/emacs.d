@@ -505,10 +505,11 @@
 
              ;; Custom Agenda's:
              org-agenda-custom-commands
-             '(("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
+             '(
+               ("A" "Immediate Tasks" todo "TODO|ACTIVE|WAITING")
+               ("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
                 ((org-agenda-files '("~/Notes/Music.org"))
-                 (org-agenda-text-search-extra-files nil)))
-               )
+                 (org-agenda-text-search-extra-files nil))))
 
              ;; Set custom faces for categories in agenda
              org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
@@ -518,7 +519,7 @@
 
              ;; Set Effort Estimates, Column View
              org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
-             org-columns-default-format "%80ITEM(Task) %TAGS(Context) %7TODO(State) %10Effort(Estim){:} %10CLOCKSUM(Clock)"
+             org-columns-default-format "%80ITEM(Task) %7TODO(State) %10Effort(Effort){:} %CLOCKSUM(Clocked) %TAGS(Tags)"
 
              ;; Set Tags, Tag Groups and Columns Width
              org-tags-column -78
@@ -649,8 +650,8 @@
 
             ;;store org-mode links to messages
             (require 'org-mu4e)
-            ;;store link to message if in header view, not to header query
-            (setq org-mu4e-link-query-in-headers-mode nil)
+            ;;store link to query if in header view, not the message cursor is currently on
+            (setq org-mu4e-link-query-in-headers-mode t)
 
             (require 'org-contacts)
             (setq org-contacts-files (list "/home/linux/Notes/Contacts.org"))
