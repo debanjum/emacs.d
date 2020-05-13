@@ -1,5 +1,6 @@
 ;; Setup Package Managers
 (require 'package)
+
 (setq package-archives '())
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -159,6 +160,11 @@
         dired-recursive-deletes 'top
         dired-listing-switches "-alh")
   :hook (dired-mode . dired-hide-details-mode))
+
+;; Jump to first non-whitespace character on line or beginning of line
+(use-package crux
+  :ensure t
+  :bind (("C-a" . crux-move-beginning-of-line)))
 
 ;; Allow defining keybinding chords via use-package
 (use-package use-package-chords
