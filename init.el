@@ -385,6 +385,17 @@
      (setq sonic-pi-path "/usr/lib/sonic-pi/")
      (setq sonic-pi-server-bin "server/bin/sonic-pi-server.rb"))))
 
+(use-package plantuml-mode
+  :after org-mode
+  :ensure t
+  :config
+  (progn
+    (setq
+     org-plantuml-jar-path
+     (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
+
+
 ;; ---------------
 ;; Major Packages
 ;; ---------------
@@ -594,6 +605,7 @@
                                            (emacs-lisp . t)
                                            (ledger . t)
                                            (ditaa . t)
+                                           (plantuml . t)
                                            (clojure . t)
                                            (js . t)
                                            (C . t)))
