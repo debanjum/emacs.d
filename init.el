@@ -604,7 +604,7 @@
 
              ;; Customise Refile (C-c C-w)
              org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
-             org-outline-path-complete-in-steps t ;; use TAB for completion
+             org-outline-path-complete-in-steps nil ;; use TAB for completion
              org-refile-targets '((nil :maxlevel . 4) ;; refile-target = depth 4 in agenda files
                                   (org-agenda-files :maxlevel . 4))
 
