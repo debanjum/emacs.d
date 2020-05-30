@@ -321,13 +321,11 @@
 ;    (add-to-list 'company-backends 'company-tabnine)))
 
 ;; Custom Beancount Company backend
-;(use-package company-ledger :load-path "lisp/company-ledger.el")
-;(add-to-list 'completion-at-point-functions 'transaction-completion-at-point)
 (use-package company-ledger
   :ensure company
   :init
   (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-ledger-backend)))
+    (add-to-list 'company-backends 'company-ledger)))
 
  ;; Trigger completion immediately.
 (setq company-idle-delay 0)
