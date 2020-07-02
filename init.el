@@ -405,7 +405,7 @@
   :bind ("C-c r" . org-randomnote)
   :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org" "~/Notes/Bucket.org")))
 
-(use-package clip2org :config (setq clip2org-clippings-file "/home/linux/Documents/eBooks/My Clippings.txt"))
+(use-package clip2org :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
 
 ;; Drag and drop images/files to attach to org task
 (use-package org-download
@@ -472,8 +472,8 @@
            org-export-with-sub-superscripts nil  ; _, ^ aren't exported to sub/superscript
 
            ;; Org-Calendar Export
-           org-icalendar-combined-agenda-file "/home/linux/Dropbox/Phone/agenda.ics"
-           org-icalendar-combined-name "Deb's Org Agenda"
+           org-icalendar-combined-agenda-file (expand-file-name "~/Dropbox/Phone/agenda.ics")
+           org-icalendar-combined-name "D's Org Agenda"
            org-icalendar-use-scheduled '(todo-start event-if-todo)
            org-icalendar-use-deadline '(todo-due event-if-todo)
            org-icalendar-store-UID t
@@ -736,7 +736,7 @@
             (setq org-mu4e-link-query-in-headers-mode t)
 
             (require 'org-contacts)
-            (setq org-contacts-files (list "/home/linux/Notes/Contacts.org"))
+            (setq org-contacts-files (list (expand-file-name "~/Notes/Contacts.org")))
 
             ;;task state dependency chaining
             (require 'org-depend)
