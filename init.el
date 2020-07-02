@@ -164,6 +164,8 @@
   :hook (dired-mode . dired-hide-details-mode))
 
 ;; Jump to first non-whitespace character on line or beginning of line
+;; NOTE: crux-move-beginning-of-line has been modified by me.
+;;       Jumps to start of line first, jumps to first non-whitespace character if already at start of line
 (use-package crux
   :ensure t
   :bind (("C-a" . crux-move-beginning-of-line)))
@@ -699,8 +701,7 @@
                                           ("google" . "https://www.google.com/search?q=%s")
                                           ("gmap"   . "https://maps.google.com/maps?q=%s")
                                           ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
-                                          ("vso"    . "https://o365exchange.visualstudio.com/O365%20Core/_git/Griffin/pullrequest/%s")
-                                          ("attachment" . org-attach-expand-link)
+                                          ; ("attachment" . org-attach-expand-link)
                                           ("transaction" . "file:Ledger.bean::%s")))
 
             ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
