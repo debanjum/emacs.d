@@ -39,8 +39,6 @@
 ;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space.
 (setq sentence-end-double-space nil)
 
-;(setq search-whitespace-regexp ".*?")
-
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - Emacs")
 
@@ -69,7 +67,7 @@
 ;; C spacing = 4 instead of default 2
 (setq-default c-basic-offset 4)
 
-;; enable some commands that are disabled for dummies
+;; enable some advanced commands
 (put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -110,7 +108,7 @@
 (advice-add 'kill-ring-save :before #'slick-copy)
 
 (defun yank-replace-rectangle (start end)
-  "Similar like yank-rectangle, but deletes selected rectangle first."
+  "Similar to yank-rectangle, but deletes selected rectangle first."
   (interactive "r")
   (delete-rectangle start end)
   (pop-to-mark-command)
@@ -127,7 +125,7 @@
                            (progn (setq old-fullscreen current-value) 'fullboth)))))
 (global-set-key [f11] 'toggle-fullscreen)
 
-;; Global Default Zoom for Work
+;; Global Default Zoom for Work Monitors
 (global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
 (global-set-key (kbd "C-x C-g -") '(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
 
@@ -678,7 +676,6 @@
                                           ("google" . "https://www.google.com/search?q=%s")
                                           ("gmap"   . "https://maps.google.com/maps?q=%s")
                                           ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
-                                          ; ("attachment" . org-attach-expand-link)
                                           ("transaction" . "file:Ledger.bean::%s")))
 
             ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
@@ -775,15 +772,6 @@
 
 ;; Make ipython 5.x (color)compatible with Emacs eshell
 (if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
-
-;; Realgud Enhanced Debugging
-;(use-package realgud :ensure t :defer t)
-;(with-eval-after-load 'python (progn
-;                               (load "realgud")
-;                               (define-key python-mode-map (kbd "C-c g") 'realgud:pdb)
-;                               (use-package epdb :load-path "lisp")))
-;;; EPDB Integration
-;(use-package epdb :load-path "lisp")  ;; not portable, but doesn't block/fail emacs load
 
 ;; Clojure
 (use-package clojure-mode
@@ -1042,4 +1030,3 @@
   :config (progn
             (load "solarized-theme-autoloads" nil t)
             (load-theme 'solarized-light t)))
-
