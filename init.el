@@ -761,6 +761,10 @@
              (if (equal buffer-file-name (expand-file-name org-music-file))
                  (org-music-mode))))))
 
+;; Org-Media-Annotation Mode
+(use-package org-media-annotation
+  :load-path "lisp/org-media-annotation.el")
+
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
