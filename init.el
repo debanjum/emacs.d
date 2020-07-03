@@ -98,14 +98,14 @@
 (global-set-key (kbd "C-w") 'backward-kill-word-or-kill-region)
 
 ;; M-w to yank line if no active region selected
-(defun slick-copy (beg end)
+(defun yank-line (beg end)
   (interactive
    (if mark-active
        (list (region-beginning) (region-end))
-     (message "Copied line")
+     (message "Yanked current line")
      (list (line-beginning-position) (line-beginning-position 2)))))
 
-(advice-add 'kill-ring-save :before #'slick-copy)
+(advice-add 'kill-ring-save :before #'yank-line)
 
 (defun yank-replace-rectangle (start end)
   "Similar to yank-rectangle, but deletes selected rectangle first."
@@ -380,7 +380,7 @@
 (use-package org-randomnote
   :ensure t
   :bind ("C-c r" . org-randomnote)
-  :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org" "~/Notes/Bucket.org")))
+  :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org")))
 
 (use-package clip2org :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
 
