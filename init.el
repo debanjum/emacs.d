@@ -866,6 +866,12 @@
   :commands tern-ac-setup
   :init (with-eval-after-load 'tern (tern-ac-setup)))
 
+(use-package tide
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)))
+
 ;; Set Xelatex as default latex(C-c C-c), if Xelatex installed on system
 (if (executable-find "xelatex") (setq latex-run-command "xelatex"))
 (defun my-latex-setup ()
