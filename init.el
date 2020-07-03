@@ -731,6 +731,14 @@
               (org-map-entries '(lambda () (org-id-get-create t))))
             ))
 
+;; Quickstart for org drill
+;; Primarily used for Spaced Repetition habit on Phone (via Tasker, Termux)
+(defun start-org-drill ()
+  (interactive)
+  (org-id-goto "org-heading-for-org-drill") ; id PROPERTY of my Org-Drill Heading
+  (org-narrow-to-subtree)
+  (org-drill)
+  (save-buffer))
 
 ;; My Org Blog Setup
 (use-package blog
