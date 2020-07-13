@@ -494,7 +494,7 @@
              org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
 
              ;; Attachments
-             org-attach-directory (concat org-directory "data")
+             org-attach-id-dir "data/"
 
              ;; Org Default File App to Open
              org-file-apps '(("\\.mm\\'" . default)
@@ -547,8 +547,7 @@
                )
 
              ;; Include Org Modules
-             org-modules '(org-habit org-drill)
-             org-drill-add-random-noise-to-intervals-p t ;; add random noise to repeat interval of org-drill
+             org-modules '(org-habit)
 
              ; Org-Habit Settings
              org-habit-preceding-days 30
@@ -657,9 +656,6 @@
               :ensure t
               :bind ("C-x p i" . 'org-cliplink))
 
-            ;; Link to specific (git) versions of a file.
-            (require 'org-git-link)
-
             ;; Github Link Formatter
             (defun gitlink (tag)
               "converts github issues, pull requests into valid format"
@@ -733,6 +729,10 @@
 
 ;; Quickstart for org drill
 ;; Primarily used for Spaced Repetition habit on Phone (via Tasker, Termux)
+(use-package org-drill
+  :ensure t
+  :config (setq org-drill-add-random-noise-to-intervals-p t)) ;; add random noise to repeat interval
+
 (defun start-org-drill ()
   (interactive)
   (org-id-goto "org-heading-for-org-drill") ; id PROPERTY of my Org-Drill Heading
