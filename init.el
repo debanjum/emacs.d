@@ -276,13 +276,8 @@
 (use-package recentf
   :ensure t
   :init (recentf-mode t)
-  :bind ("C-x C-r" . ido-recentf-open)  ;; replace `find-file-read-only` with more a useful command
-  :config (progn
-            (setq recentf-max-saved-items 50)
-            (defun ido-recentf-open ()
-              "Use `ido-completing-read` to `find-file` a recent file"
-              (interactive)
-              (find-file (ido-completing-read "Find recent file: " recentf-list)))))
+  :bind ("C-x C-r" . counsel-recentf)  ;; replace `find-file-read-only` with more a useful command
+  :config (setq recentf-max-saved-items 50))
 
 ;; To keep GNU ELPA Keyring up-to-date
 (use-package gnu-elpa-keyring-update
