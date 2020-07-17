@@ -266,11 +266,11 @@
   :bind (("C-s" . swiper)
          ("C-r" . swiper)))
 
-;; Smex for M-x auto-completion, fuzzy-matching etc
-;; Need to keep it as it's used by counsel-M-x for suggestion ranking
-(use-package smex
+;; Amx for M-x persistent MRU for auto-completion. Replaces Smex as that's deprecated.
+;; Amx can rely on Ivy via counsel-M-x or ido completion backend for fuzzy candidate matching etc.
+(use-package amx
   :ensure t
-  :config (smex-initialize))
+  :config (amx-mode))
 
 ;; Recentf to suggest recently opened files on C-x C-r
 (use-package recentf
