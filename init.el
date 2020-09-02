@@ -585,6 +585,7 @@
              ;; Customise Refile (C-c C-w)
              org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
              org-outline-path-complete-in-steps nil ;; use TAB for completion
+             org-refile-use-cache t  ;; use cache for speed-up
              org-refile-targets '((nil :maxlevel . 4) ;; refile-target = depth 4 in agenda files
                                   (org-agenda-files :maxlevel . 4))
 
@@ -696,6 +697,11 @@
              :follow '(lambda(path) (message "Outlook not available on linux"))
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
              :help-echo "Outlook not available on this machine")
+
+             ;; Refresh org-refile cache on Emacs idle > 5 mins
+             (run-with-idle-timer 300 t (lambda ()
+                                          (org-refile-cache-clear)
+                                          (org-refile-get-targets)))
 
             (defun d/org-id-complete-link (&optional arg)
               "Create an id: link using completion"
