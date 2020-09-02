@@ -697,6 +697,31 @@
              :face '(:foreground "dodgerblue" :underline t :strike-through t)
              :help-echo "Outlook not available on this machine")
 
+            (defun d/org-id-complete-link (&optional arg)
+              "Create an id: link using completion"
+              (concat "id:" (org-id-get-with-outline-path-completion
+                             '((nil :maxlevel . 4)
+                               (org-agenda-files :maxlevel . 4)))))
+
+            (defun d/org-id-complete-link-description (link desc)
+              (if (and (string-prefix-p "id:" link)
+                       (or (not desc) (string= "" desc)))
+                  (let* ((id (string-remove-prefix "id:" link)))
+                    (save-excursion
+                      (org-id-goto id)
+                      (nth 4 (org-heading-components))))
+                desc))
+
+            ;; Store id based link to org entry at point via C-c l
+            (setq org-id-link-to-org-use-id t)
+
+            ;; Set org entry heading/title as default description for id:<id> type links
+            (setq org-link-make-description-function #'d/org-id-complete-link-description)
+
+            (org-link-set-parameters
+             "id"
+             :complete 'd/org-id-complete-link)
+
             ;;store org-mode links to messages
             (require 'org-mu4e)
             ;;store link to query if in header view, not the message cursor is currently on
