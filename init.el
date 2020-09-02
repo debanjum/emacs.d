@@ -465,6 +465,9 @@
              ;; Allow user specified scaling of org-inline images.
              org-image-actual-width nil
 
+             ;; Allow setting scheduled time if multiple entries selected
+             org-loop-over-headlines-in-active-region t
+
              ;; Prevent invisible edits and show region
              org-catch-invisible-edits 'show-and-error
 
