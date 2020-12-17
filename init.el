@@ -491,8 +491,7 @@
              org-file-apps '(("\\.mm\\'" . default)
                              ("\\.x?html?\\'" . "firefox %s")
                              ("\\.pdf\\'" . default)
-                             ("\\.odt\\'" . "libreoffice %s")
-                             (auto-mode . emacs))
+                             ("\\.odt\\'" . "libreoffice %s"))
 
              mailcap-user-mime-data '(
                ("vnd\\.oasis\\.opendocument\\.text"
@@ -574,9 +573,9 @@
              org-tag-alist '((:startgroup) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup)
                              (:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
                              (:startgroup) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup)
-                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) ("TOOLS" . ?g) (:endgroup)
+                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) (:endgroup)
                              (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L) (:endgroup)
-                             ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
+                             ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
 
              ;; Customise Refile (C-c C-w)
              org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
@@ -604,6 +603,10 @@
                                      ;; For Web/Mail Capture
                                      ("m" "Mail" entry (file+headline "Schedule.org" "PROJECTS")
                                       "** TODO %^{Title} :WEB:READ:\n   CAPTURED: %U\n   %?" :prepend t :empty-lines 1)
+
+                                     ;; For Web/Mail Capture
+                                     ("p" "Plan for Today" entry (id "2f6dbcf9-20f0-4341-8390-e51a987a3e01")
+                                      "*** %u: Plan for Today\n     - [%] Major\n       - %?\n     - [%] Minor\n" :prepend t :empty-lines 1)
 
                                      ;; Create Work Entry with :Work: tag. Note capture time, location
                                      ("w" "Work" entry (file+headline "Schedule.org" "PROJECTS")
