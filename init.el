@@ -39,6 +39,11 @@
 ;; as long as packages depend on cl instead of cl-lib this warning will remain
 (setq byte-compile-warnings '(cl-functions)) ;
 
+;; save command executed history
+(setq
+ savehist-additional-variables '(counsel-M-x-history command-history extended-command-history)
+ savehist-mode 1)
+
 ;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space.
 (setq sentence-end-double-space nil)
 
@@ -1105,7 +1110,8 @@
           ;; Don't change size of org-mode headlines (but keep other size-changes)
           (setq solarized-scale-org-headlines nil)
           ;; Don't change the font for some headings and titles
-          (setq solarized-use-variable-pitch nil))
+          (setq solarized-use-variable-pitch nil)
+          (setq cursor-color "aaaaaa"))
   :config (progn
             (load "solarized-theme-autoloads" nil t)
             (load-theme 'solarized-light t)))
