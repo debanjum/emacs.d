@@ -36,6 +36,9 @@
 (setq desktop-save-mode t
       desktop-path '("."))
 
+;; as long as packages depend on cl instead of cl-lib this warning will remain
+(setq byte-compile-warnings '(cl-functions)) ;
+
 ;; Emacs thinks a sentence a full-stop followed by 2 spaces. Let’s make it full-stop and 1 space.
 (setq sentence-end-double-space nil)
 
@@ -50,6 +53,9 @@
 
 ;; Blank *scratch* buffer
 (setq initial-scratch-message nil)
+
+;; All prompts in minibuffer instead of in GUI popup
+(setq use-dialog-box nil)
 
 ;; Garbage Collection after 20MB
 (setq gc-cons-threshold (* 20 1024 1024))
@@ -196,6 +202,9 @@
 ;; Uniquify buffer names foo.c:src, foo.c:extra
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
+
+;; Cache passphrase for symmetric encrypted files
+(setq epa-file-cache-passphrase-for-symmetric-encryption t)
 
 ;; no tabs by default. modes that really need tabs should enable
 ;; indent-tabs-mode explicitly. e.g makefile-mode already does that
@@ -686,7 +695,7 @@
              :help-echo "Outlook not available on this machine")
 
              ;; Refresh org-refile cache on Emacs idle > 5 mins
-             (run-with-idle-timer 300 t (lambda ()
+             (run-with-idle-timer 900 t (lambda ()
                                           (org-refile-cache-clear)
                                           (org-refile-get-targets)))
 
