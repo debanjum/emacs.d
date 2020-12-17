@@ -796,12 +796,17 @@
 (use-package evil :ensure t)
 ;(use-package evil-org :ensure t)
 
+;; Csharp Mode
+(use-package csharp-mode
+  :ensure t)
+
 ;; Elpy for Python
 (use-package elpy
   :ensure t
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
   :config (progn
+            (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
             (setq
              elpy-test-nose-runner-command '("nosetests" "-s" "-v")
              elpy-test-runner 'elpy-test-nose-runner)))
@@ -837,6 +842,15 @@
   :ensure t
   :diminish clj-refactor-mode
   :config (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+;; Rust Mode
+(use-package rust-mode :ensure t)
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+;; Install Haskell-Mode
+(use-package haskell-mode :ensure t)
 
 ;; Intero for Haskell
 (use-package intero
