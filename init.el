@@ -135,22 +135,6 @@
 ;; ---------------
 ;; Tools
 ;; ---------------
-(use-package diminish
-  :ensure t
-  :diminish auto-revert-mode
-  :diminish abbrev-mode
-  :diminish undo-tree-mode
-  :diminish which-key-mode
-  :diminish subword-mode
-  :diminish eldoc-mode
-  :diminish ivy-mode)
-
-(eval-after-load 'flycheck
-  '(diminish 'flycheck-mode))
-
-(eval-after-load 'auto-revert-mode
-  '(diminish 'auto-revert-mode))
-
 (use-package dired
   :bind (:map dired-mode-map
               ("C-c C-e" . wdired-change-to-wdired-mode))
@@ -1062,6 +1046,26 @@
         (emms-stop)
         (emms-start)))
     (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)))
+
+(use-package diminish
+  :ensure t
+  :diminish auto-revert-mode
+  :diminish abbrev-mode
+  :diminish undo-tree-mode
+  :diminish which-key-mode
+  :diminish subword-mode
+  :diminish eldoc-mode
+  :diminish ivy-mode
+  :diminish whitespace-cleanup-mode)
+
+(eval-after-load 'flycheck
+  '(diminish 'flycheck-mode))
+
+(eval-after-load 'auto-revert-mode
+  '(diminish 'auto-revert-mode))
+
+(eval-after-load 'whitespace-cleanup-mode
+  '(diminish 'whitespace-cleanup-mode))
 
 ;; ---------------
 ;; Theme
