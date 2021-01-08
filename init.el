@@ -496,7 +496,8 @@
              org-file-apps '(("\\.mm\\'" . default)
                              ("\\.x?html?\\'" . "firefox %s")
                              ("\\.pdf\\'" . default)
-                             ("\\.odt\\'" . "libreoffice %s"))
+                             ("\\.odt\\'" . "libreoffice %s")
+                             (t . emacs))
 
              mailcap-user-mime-data '(
                ("vnd\\.oasis\\.opendocument\\.text"
