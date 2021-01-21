@@ -880,8 +880,13 @@
 ;; Web-Mode for HTML
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" . web-mode)
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode))
   :config (progn
+            (add-hook 'web-mode-hook
+                      (lambda ()
+                        (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                          (setup-tide-mode))))
             (add-hook 'web-mode-hook
                       (lambda ()
                         (setq web-mode-enable-css-colorization t
@@ -917,11 +922,21 @@
   :commands tern-ac-setup
   :init (with-eval-after-load 'tern (tern-ac-setup)))
 
+;; Typescript
+(defun setup-tide-mode ()
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  (company-mode +1))
+
 (use-package tide
   :ensure t
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)))
+  :hook ((typescript-mode . setup-tide-mode)
+         (before-save . tide-format-before-save))
+  :config (progn
+            (flycheck-add-mode 'typescript-tslint 'web-mode)))
 
 ;; Set Xelatex as default latex(C-c C-c), if Xelatex installed on system
 (if (executable-find "xelatex") (setq latex-run-command "xelatex"))
