@@ -493,10 +493,11 @@
              org-attach-id-dir "data/"
 
              ;; Org Default File App to Open
-             org-file-apps '(("\\.mm\\'" . default)
-                             ("\\.x?html?\\'" . "firefox %s")
-                             ("\\.pdf\\'" . default)
-                             ("\\.odt\\'" . "libreoffice %s")
+             org-file-apps '(("mm" . default)
+                             ("\\(?:xhtml\\|html\\)\\'" . "firefox %s")
+                             ("pdf" . "evince %s")
+                             ("\\.pdf::\\([0-9]+\\)\\'" . "evince -p %1 %s")
+                             ("odt" . "libreoffice %s")
                              (t . emacs))
 
              mailcap-user-mime-data '(
@@ -612,7 +613,7 @@
 
                                      ;; For Web/Mail Capture
                                      ("p" "Plan for Today" entry (id "2f6dbcf9-20f0-4341-8390-e51a987a3e01")
-                                      "*** %u: Plan for Today\n     - [%] Major\n       - %?\n     - [%] Minor\n" :prepend t :empty-lines 1)
+                                      "*** %u: Plan for Today\n    - [%] Major\n      - [ ] %?\n    - [%] Minor\n" :prepend t :empty-lines 1)
 
                                      ;; Create Work Entry with :Work: tag. Note capture time, location
                                      ("w" "Work" entry (file+headline "Schedule.org" "PROJECTS")
