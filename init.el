@@ -23,6 +23,9 @@
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 
+; Smooth scrolling
+;(pixel-scroll-mode)
+
 ;; Replace/Remove selection if present on yank/delete
 (delete-selection-mode)
 
@@ -309,7 +312,7 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
 ;; Zeitgiest Integration
-(use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
+;(use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
 
 ;; Setup Mail: mu4e, smtpmail
 (use-package setup-mail)
