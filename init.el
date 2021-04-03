@@ -894,11 +894,11 @@
             (add-hook 'web-mode-hook
                       (lambda ()
                         (setq web-mode-enable-css-colorization t
-                              web-mode-markup-indent-offset 2
-                              web-mode-css-indent-offset 2
-                              web-mode-code-indent-offset 2
-                              web-mode-style-padding 2
-                              web-mode-script-padding 2
+                              web-mode-markup-indent-offset 4
+                              web-mode-css-indent-offset 4
+                              web-mode-code-indent-offset 4
+                              web-mode-style-padding 4
+                              web-mode-script-padding 4
                               web-mode-ac-sources-alist
                               '(("css" . (ac-source-css-property))
                                 ("html" . (ac-source-words-in-buffer ac-source-abbrev))))))))
@@ -911,7 +911,7 @@
   :interpreter ("node" . js2-mode)
   :commands js2-mode
   :config (progn
-            (setq-default js2-basic-offset 2
+            (setq-default js2-basic-offset 4
                           js2-indent-switch-body t
                           js2-auto-indent-p t
                           flycheck-disabled-checkers '(javascript-jshint)
@@ -931,6 +931,8 @@
   (tide-setup)
   (flycheck-mode +1)
   (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (setq typescript-indent-level
+        (or (plist-get (tide-tsfmt-options) ':indentSize) 4))
   (eldoc-mode +1)
   (tide-hl-identifier-mode +1)
   (company-mode +1))
