@@ -265,7 +265,7 @@
 (use-package swiper
   :after ivy
   :bind (("C-s" . swiper)
-         ("C-r" . swiper)))
+         ("C-r" . swiper-backward)))
 
 ;; Amx for M-x persistent MRU for auto-completion. Replaces Smex as that's deprecated.
 ;; Amx can rely on Ivy via counsel-M-x or ido completion backend for fuzzy candidate matching etc.
