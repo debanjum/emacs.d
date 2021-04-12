@@ -26,6 +26,12 @@
 ; Smooth scrolling
 ;(pixel-scroll-mode)
 
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config (when (memq window-system '(mac ns x))
+            (exec-path-from-shell-initialize)))
+
 ;; Replace/Remove selection if present on yank/delete
 (delete-selection-mode)
 
@@ -36,7 +42,7 @@
 (global-subword-mode)
 
 ;; emacs buffer, window persistence
-(setq desktop-save-mode t
+(setq desktop-save-mode 1
       desktop-path '("."))
 
 ;; as long as packages depend on cl instead of cl-lib this warning will remain
@@ -68,9 +74,21 @@
 ;; Garbage Collection after 20MB
 (setq gc-cons-threshold (* 20 1024 1024))
 
-;; Make clipboard work well with X applications
-(setq select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+;; Make clipboard work well with MacOS Clipboard
+(defun copy-from-macos ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-macos (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+(when (memq window-system '(mac ns x))
+  (progn
+    ;;;;; Clipboard Mac OS X
+    (setq interprogram-cut-function 'paste-to-macos)
+    (setq interprogram-paste-function 'copy-from-macos)))
 
 ;; No newlines past EOF
 (setq next-line-add-newlines nil)
@@ -256,6 +274,7 @@
                                      (t      . ivy--regex-fuzzy)))))
 
 (use-package counsel
+  :ensure t
   :after (ivy use-package-chords)
   :diminish
   :chords (("yy" . counsel-yank-pop))
@@ -263,6 +282,7 @@
             (counsel-mode)))
 
 (use-package swiper
+  :ensure t
   :after ivy
   :bind (("C-s" . swiper)
          ("C-r" . swiper-backward)))
@@ -322,7 +342,7 @@
 
 ;; Custom Beancount Company backend
 (use-package company-ledger
-  :ensure company
+  :ensure t
   :init
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-ledger)))
@@ -865,13 +885,13 @@
 ;; Install Haskell-Mode
 (use-package haskell-mode :ensure t)
 
-;; Intero for Haskell
-(use-package intero
+;; Dante for Haskell
+(use-package dante
   :ensure t
-  :defer t
-  :init (progn
-          (setq intero-blacklist (list (expand-file-name "~/Scripts/AlgoMusic/Tidal/"))) ;; Don't Load Intero for Tidal
-          (add-hook 'haskell-mode-hook 'intero-mode-blacklist)))
+  :after haskell-mode
+  :commands 'dante-mode
+  :init
+  (add-hook 'haskell-mode-hook 'dante-mode))
 
 ;; Tidal for Live Coding Music in Haskell
 (use-package tidal
