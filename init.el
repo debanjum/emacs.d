@@ -445,7 +445,7 @@
            org-export-with-sub-superscripts nil  ; _, ^ aren't exported to sub/superscript
 
            ;; Org-Calendar Export
-           org-icalendar-combined-agenda-file (expand-file-name "~/Dropbox/Phone/agenda.ics")
+           org-icalendar-combined-agenda-file (expand-file-name "~/Sync/Phone/agenda.ics")
            org-icalendar-combined-name "D's Org Agenda"
            org-icalendar-use-scheduled '(todo-start event-if-todo)
            org-icalendar-use-deadline '(todo-due event-if-todo)
@@ -493,7 +493,7 @@
              org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
 
              ;; Attachments
-             org-attach-id-dir "data/"
+             org-attach-id-dir "~/Notes/data/"
 
              ;; Org Default File App to Open
              org-file-apps '(("mm" . default)
@@ -787,8 +787,8 @@
   :init (progn
           (setq
            org-music-file "~/Notes/Music.org"
-           org-music-media-directory "~/Music/OrgMusic/"
-           org-music-next-cloud-script "~/Scripts/bin/nextcloud.py"
+           org-music-media-directory "~/Music/Sync/Org"
+           org-music-next-cloud-script "~/Code/bin/nextcloud.py"
            org-music-operating-system "linux"
            org-music-playlist-file "orgmusic-linux.m3u"
            org-music-cache-size 100)
