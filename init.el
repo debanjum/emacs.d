@@ -164,6 +164,11 @@
 ;; Puts custom-set-variables into a separate temporary file
 (setq custom-file (make-temp-file "emacs-custom"))
 
+;; Spell Check
+(when (executable-find "aspell")
+  (setq-default ispell-program-name "aspell")
+  (setq ispell-extra-args '("--sug-mode=ultra" "--camel-case")))
+
 ;; ---------------
 ;; Tools
 ;; ---------------
