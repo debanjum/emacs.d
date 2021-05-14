@@ -90,6 +90,10 @@
     (setq interprogram-cut-function 'paste-to-macos)
     (setq interprogram-paste-function 'copy-from-macos)))
 
+; To show emoji's on MacOS by using Apple Color Emoji font for symbols
+(when (memq window-system '(mac ns x))
+  (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend))
+
 ;; No newlines past EOF
 (setq next-line-add-newlines nil)
 
