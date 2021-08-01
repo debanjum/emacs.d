@@ -23,10 +23,6 @@
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 
-; Smooth scrolling
-;(pixel-scroll-mode)
-
-
 (use-package exec-path-from-shell
   :ensure t
   :config (when (memq window-system '(mac ns x))
@@ -270,7 +266,8 @@
 (use-package ivy
   :ensure t
   :diminish
-  :bind (("C-c C-r" . ivy-resume))
+  :bind (("C-c C-r" . ivy-resume)
+         ("C-c C-j" . ivy-immediate-done)) ; default keybinding C-M-j conflicts with an MacOS keybinding
   :config (progn
             (ivy-mode)
             (setq
@@ -349,7 +346,7 @@
 ;; Company mode for Completion
 (use-package company :ensure t :defer t :diminish company-mode)
 
-;; Custom Beancount Company backend
+;; Beancount Company backend
 (use-package company-ledger
   :ensure t
   :init
@@ -503,20 +500,6 @@
 
              ;; Attachments
              org-attach-id-dir "~/Notes/data/"
-
-             ;; Org Default File App to Open
-             org-file-apps '(("mm" . default)
-                             ("\\(?:xhtml\\|html\\)\\'" . "firefox %s")
-                             ("pdf" . "evince %s")
-                             ("\\.pdf::\\([0-9]+\\)\\'" . "evince -p %1 %s")
-                             ("odt" . "libreoffice %s")
-                             (t . emacs))
-
-             mailcap-user-mime-data '(
-               ("vnd\\.oasis\\.opendocument\\.text"
-                (viewer . "libreoffice %s")
-                (type . "application/vnd\\.oasis\\.opendocument\\.text")
-                (test . t)))
 
              ;; Org-Babel
              ;; set cider as org babel clojure backend
@@ -796,7 +779,7 @@
   :init (progn
           (setq
            org-music-file "~/Notes/Music.org"
-           org-music-media-directory "~/Music/Sync/Org"
+           org-music-media-directory "~/Music/Sync/Org/"
            org-music-next-cloud-script "~/Code/bin/nextcloud.py"
            org-music-operating-system "linux"
            org-music-playlist-file "orgmusic-linux.m3u"
@@ -1135,7 +1118,7 @@
 ;; Note: Replace current book name used in Macro to the name of current book for which highlights are to be converted from Bookcision Plain-Text import to Org-Mode
 ;;       E.g Sapiens = ?S ?a ?p ?i ?e ?n ?s with New Book = ?N ?e ?w ?  ?B ?o ?o ?k
 (fset 'convert-kindle-highlight-from-bookcision-plain-text-to-org-mode
-   (kmacro-lambda-form [?\C-s ?L ?O ?C ?A ?T ?I ?O ?N ?: return ?\C-a ?\C-k C-up ?\C-p ?* ?* ?  ?\C-y ?\C-a ?\M-c ?\C-d ?\C-a ?\M-x ?o ?r ?g ?i ?d ?g ?e ?t ?c ?r ?e ?a ?t ?e return ?\C-n ?\C-e tab return tab ?: ?\C-y return tab ?: ?B ?O ?O ?K ?: ?  ?  ?  ?  ?  ?S ?a ?p ?i ?e ?n ?s ?: ?  ?A ?\S-  ?B ?r ?i ?e ?f ?  ?H ?i ?s ?t ?o ?r ?y ?  ?o ?f ?  ?H ?u ?m ?a ?n ?k ?i ?n ?d ?  ?\( ?Y ?u ?v ?a ?l ?  ?N ?o ?a ?h ?  ?H ?a ?r ?a ?r ?i ?\) C-down tab ?\C-  ?\C-e ?\M-q ?\C-  right ?\C-  ?\C- ] 0 "%d"))
+      (kmacro-lambda-form [?\C-s ?L ?O ?C ?A ?T ?I ?O ?N ?: return ?\C-a ?\C-k C-up ?\C-p ?* ?* ?  ?\C-y ?\C-a ?\M-c ?\C-d ?\C-a ?\M-x ?o ?r ?g ?i ?d ?g ?e ?t ?c ?r ?e ?a ?t ?e return ?\C-n ?\C-e tab return tab ?: ?\C-y return tab ?: ?B ?O ?O ?K ?: ?  ?  ?  ?  ?  ?S ?a ?p ?i ?e ?n ?s ?: ?  ?A ?\S-  ?B ?r ?i ?e ?f ?  ?H ?i ?s ?t ?o ?r ?y ?  ?o ?f ?  ?H ?u ?m ?a ?n ?k ?i ?n ?d ?  ?\( ?Y ?u ?v ?a ?l ?  ?N ?o ?a ?h ?  ?H ?a ?r ?a ?r ?i ?\) C-down tab ?\C-  ?\C-e ?\M-q ?\C-  right ?\C-  ?\C- ] 0 "%d"))
 
 ;; ---------------
 ;; Theme
