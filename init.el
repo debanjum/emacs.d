@@ -103,6 +103,13 @@
 (when (memq window-system '(mac ns x))
   (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend))
 
+(defun create-open-deep-link (start end)
+  (interactive "r")
+  (let* ((highlighted-text (buffer-substring-no-properties start end))
+         (resource-link (org-entry-get start "RESOURCE"))
+         (deep-link (format "%s/#:~:text=%s" resource-link highlighted-text)))
+    (org-link-open-from-string (url-encode-url deep-link))))
+
 ;; No newlines past EOF
 (setq next-line-add-newlines nil)
 
