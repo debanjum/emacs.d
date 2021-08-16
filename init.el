@@ -808,6 +808,10 @@
 (use-package org-media-annotation
   :load-path "lisp/org-media-annotation.el")
 
+;; Org QL
+(use-package org-ql
+  :ensure t)
+
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
