@@ -405,6 +405,7 @@
   :config
   ;; add support to dired
   (add-hook 'dired-mode-hook 'org-download-enable)
+  (setq org-download-screenshot-method "/usr/sbin/screencapture -s %s")
   (setq org-download-method 'attach))
 
 (use-package all-the-icons :ensure t) ;; icon set
@@ -417,15 +418,15 @@
   :ensure t
   :mode "\\.rb\\'")
 
-(use-package sonic-pi
-  :ensure t
-  :config
-  (add-hook
-   'sonic-pi-mode-hook
-   (lambda ()
-     ;; This setq can go here instead if you wish
-     (setq sonic-pi-path "/usr/lib/sonic-pi/")
-     (setq sonic-pi-server-bin "server/bin/sonic-pi-server.rb"))))
+;(use-package sonic-pi
+;  :ensure t
+;  :config
+;  (add-hook
+;   'sonic-pi-mode-hook
+;   (lambda ()
+;     ;; This setq can go here instead if you wish
+;     (setq sonic-pi-path "/Applications/Sonic\ Pi.app/")
+;     (setq sonic-pi-server-bin "Contents/Resources/app/server/ruby/bin/sonic-pi-server.rb"))))
 
 (use-package plantuml-mode
   :after org-mode
@@ -880,11 +881,7 @@
 
 ;; Tidal for Live Coding Music in Haskell
 (use-package tidal
-  :ensure t
-  :config (progn
-            (setq
-             tidal-boot-script-path
-             (expand-file-name "~/.cabal/share/x86_64-linux-ghc-8.0.2/tidal-1.4.9/BootTidal.hs"))))
+  :ensure t)
 
 ;; Web-Mode for HTML
 (use-package web-mode
