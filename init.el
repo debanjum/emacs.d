@@ -819,6 +819,11 @@
 (use-package org-ql
   :ensure t)
 
+;; Org-Semantic Search Library
+(use-package semantic-search
+  :quelpa (semantic-search :fetcher github-ssh :repo "debanjum/emacs-semantic-search")
+  :bind ("C-c s" . 'semantic-search))
+
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
