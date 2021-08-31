@@ -16,15 +16,14 @@
 (setq straight-use-package-by-default t)
 (straight-use-package 'use-package)
 
+
 ;; ---------------
-;; Basic Config
+;; Org Mode
 ;; ---------------
 (use-package all-the-icons) ;; icon set
 
 ;; Org-Mode
 (use-package org
-  ;; Install package org-contrib for org
-  ;;:straight (org-contrib :includes (org))
   ;; Load org in org-mode
   :mode (("\\.org$" . org-mode))
   ;; Bind keys
@@ -298,6 +297,13 @@
              "id"
              :complete 'd/org-id-complete-link)
 
+            (defun create-open-deep-link (start end)
+              (interactive "r")
+              (let* ((highlighted-text (buffer-substring-no-properties start end))
+                     (resource-link (org-entry-get start "RESOURCE"))
+                     (deep-link (format "%s/#:~:text=%s" resource-link highlighted-text)))
+                (org-link-open-from-string (url-encode-url deep-link))))
+
             ;;store org-mode links to messages
             (require 'org-mu4e)
             ;;store link to query if in header view, not the message cursor is currently on
@@ -317,6 +323,112 @@
               (org-map-entries '(lambda () (org-id-get-create t))))
             ))
 
+(use-package org-contrib
+  :straight (:includes (org-contacts org-depend))
+  :config (setq org-contacts-files
+                (list (expand-file-name "~/Notes/Contacts.org"))))
+
+;; Orgit: Support for Org links to Magit buffers
+(use-package orgit :after (org magit))
+
+;; Annotation for ebooks, pdf's etc in org files
+(use-package org-noter
+  :after org
+  :config (progn
+            (setq
+             org-noter-auto-save-last-location t
+             org-noter-notes-search-path '("~/Notes"))))
+
+(use-package org-randomnote
+  :after org
+  :bind ("C-c r" . org-randomnote)
+  :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org")))
+
+(use-package clip2org
+  :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
+
+;; Drag and drop images/files to attach to org task
+(use-package org-download
+  :after org
+  :config
+  ;; add support to dired
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  (setq org-download-screenshot-method "/usr/sbin/screencapture -s %s")
+  (setq org-download-method 'attach))
+
+(use-package ob-tmux
+  :after org
+  :custom
+  (org-babel-default-header-args:tmux
+   '((:results . "silent")     ;
+     (:session . "default")    ; The default tmux session to send code to
+     (:socket  . nil)          ; The default tmux socket to communicate with
+     (:terminal . "zsh")))
+  ;; The tmux sessions are prefixed with the following string.
+  ;; You can customize this if you like.
+  (org-babel-tmux-session-prefix ""))
+
+;; Org formatted clipboard URL formatted with Title from Webpage
+(use-package org-cliplink
+  :after org
+  :bind ("C-x p i" . 'org-cliplink))
+
+(use-package org-mime :after org)
+
+(use-package org-drill
+  :after org
+  :config (progn
+            (setq org-drill-add-random-noise-to-intervals-p t) ; add random noise to repeat interval
+
+            ;; Quickstart for org drill
+            ;; Primarily used for Spaced Repetition habit on Phone (via Tasker, Termux)
+            (defun start-org-drill ()
+              (interactive)
+              (org-id-goto "org-heading-for-org-drill") ; id PROPERTY of my Org-Drill Heading
+              (org-narrow-to-subtree)
+              (org-drill)
+              (save-buffer))))
+
+;; Org-Media-Annotation Mode
+(use-package org-media-annotation
+  :after (emms org)
+  :straight
+  (org-media-annotation
+   :local-repo "~/Code/Lisp/org-media-annotation"
+   :type git))
+
+;; Org QL
+(use-package org-ql :after org)
+(use-package helm-org-ql :after org)
+
+;; Org-Semantic Search Library
+(use-package semantic-search
+  :after (org org-music)
+  :straight (semantic-search
+             :type git
+             :host github
+             :repo "debanjum/semantic-search"
+             :files (:defaults "src/interface/emacs/semantic-search.el"))
+  :bind ("C-c s" . 'semantic-search))
+
+(use-package plantuml-mode
+  :after org
+  :config
+  (progn
+    (setq
+     org-plantuml-jar-path
+     (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
+
+;; My Org Blog Setup
+;;(use-package blog
+;;  :after org
+;;  :straight (blog :local-repo "~/Code/Lisp/Blog" :type git :require (ox-rss ox-html)))
+
+
+;; ---------------
+;; Basic Config
+;; ---------------
 ;; Disable menu, toolbar, scrollbar
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -388,13 +500,6 @@
 ; To show emoji's on MacOS by using Apple Color Emoji font for symbols
 (when (memq window-system '(mac ns x))
   (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend))
-
-(defun create-open-deep-link (start end)
-  (interactive "r")
-  (let* ((highlighted-text (buffer-substring-no-properties start end))
-         (resource-link (org-entry-get start "RESOURCE"))
-         (deep-link (format "%s/#:~:text=%s" resource-link highlighted-text)))
-    (org-link-open-from-string (url-encode-url deep-link))))
 
 ;; No newlines past EOF
 (setq next-line-add-newlines nil)
@@ -484,6 +589,7 @@
 ;; Load custom macros
 (load "custom-macros.el")
 
+
 ;; ---------------
 ;; Tools
 ;; ---------------
@@ -551,14 +657,6 @@
 ;; no tabs by default. modes that really need tabs should enable
 ;; indent-tabs-mode explicitly. e.g makefile-mode already does that
 (setq-default indent-tabs-mode nil)
-
-;; whitespace-cleanup-mode. remove whitespaces on buffer save
-(use-package whitespace-cleanup-mode
-  :hook ((python-mode . whitespace-cleanup-mode)
-         (org-mode . whitespace-cleanup-mode))
-  :init (add-hook
-           'write-file-functions
-           (lambda () (untabify (point-min) (point-max)) nil)))
 
 ;; Expand-Region for intelligent highlight expansion
 (use-package expand-region
@@ -663,141 +761,20 @@
 (use-package flycheck
   :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
+;; whitespace-cleanup-mode. remove whitespaces on buffer save
+(use-package whitespace-cleanup-mode
+  :hook ((python-mode . whitespace-cleanup-mode)
+         (org-mode . whitespace-cleanup-mode))
+  :init (add-hook
+           'write-file-functions
+           (lambda () (untabify (point-min) (point-max)) nil)))
+
+
+;; ---------------
+;; Language Packages
+;; ---------------
 (use-package ruby-mode
   :mode "\\.rb\\'")
-
-;(use-package sonic-pi
-;  :config
-;  (add-hook
-;   'sonic-pi-mode-hook
-;   (lambda ()
-;     ;; This setq can go here instead if you wish
-;     (setq sonic-pi-path "/Applications/Sonic\ Pi.app/")
-;     (setq sonic-pi-server-bin "Contents/Resources/app/server/ruby/bin/sonic-pi-server.rb"))))
-
-;; ---------------
-;; Major Packages
-;; ---------------
-
-(use-package org-contrib
-  :straight (:includes (org-contacts org-depend))
-  :config (setq org-contacts-files
-                (list (expand-file-name "~/Notes/Contacts.org"))))
-
-;; Orgit: Support for Org links to Magit buffers
-(use-package orgit :after (org magit))
-
-;; Annotation for ebooks, pdf's etc in org files
-(use-package org-noter
-  :after org
-  :config (progn
-            (setq
-             org-noter-auto-save-last-location t
-             org-noter-notes-search-path '("~/Notes"))))
-
-(use-package org-randomnote
-  :after org
-  :bind ("C-c r" . org-randomnote)
-  :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org")))
-
-(use-package clip2org
-  :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
-
-;; Drag and drop images/files to attach to org task
-(use-package org-download
-  :after org
-  :config
-  ;; add support to dired
-  (add-hook 'dired-mode-hook 'org-download-enable)
-  (setq org-download-screenshot-method "/usr/sbin/screencapture -s %s")
-  (setq org-download-method 'attach))
-
-(use-package ob-tmux
-  :after org
-  :custom
-  (org-babel-default-header-args:tmux
-   '((:results . "silent")     ;
-     (:session . "default")    ; The default tmux session to send code to
-     (:socket  . nil)          ; The default tmux socket to communicate with
-     (:terminal . "zsh")))
-  ;; The tmux sessions are prefixed with the following string.
-  ;; You can customize this if you like.
-  (org-babel-tmux-session-prefix ""))
-
-;; Org formatted clipboard URL formatted with Title from Webpage
-(use-package org-cliplink
-  :after org
-  :bind ("C-x p i" . 'org-cliplink))
-
-(use-package org-mime :after org)
-
-(use-package org-drill
-  :after org
-  :config (progn
-            (setq org-drill-add-random-noise-to-intervals-p t) ; add random noise to repeat interval
-
-            ;; Quickstart for org drill
-            ;; Primarily used for Spaced Repetition habit on Phone (via Tasker, Termux)
-            (defun start-org-drill ()
-              (interactive)
-              (org-id-goto "org-heading-for-org-drill") ; id PROPERTY of my Org-Drill Heading
-              (org-narrow-to-subtree)
-              (org-drill)
-              (save-buffer))))
-
-;; Org-Music Mode
-(use-package org-music
-  :straight (org-music :type git :host github :repo "debanjum/org-music")
-  :after org
-  :init (progn
-          (setq
-           org-music-file "~/Notes/Music.org"
-           org-music-media-directory "~/Music/Sync/Org/"
-           org-music-next-cloud-script "~/Code/bin/nextcloud.py"
-           org-music-operating-system "mac"
-           org-music-playlist-file "orgmusic-mac.m3u"
-           org-music-cache-size 100)
-          (add-hook
-           'org-mode-hook
-           (lambda()
-             (if (equal buffer-file-name (expand-file-name org-music-file))
-                 (org-music-mode))))))
-
-;; Org-Media-Annotation Mode
-(use-package org-media-annotation
-  :after (emms org)
-  :straight
-  (org-media-annotation
-   :local-repo "~/Code/Lisp/org-media-annotation"
-   :type git))
-
-;; Org QL
-(use-package org-ql :after org)
-(use-package helm-org-ql :after org)
-
-;; Org-Semantic Search Library
-(use-package semantic-search
-  :after (org org-music)
-  :straight (semantic-search
-             :type git
-             :host github
-             :repo "debanjum/semantic-search"
-             :files (:defaults "src/interface/emacs/semantic-search.el"))
-  :bind ("C-c s" . 'semantic-search))
-
-(use-package plantuml-mode
-  :after org
-  :config
-  (progn
-    (setq
-     org-plantuml-jar-path
-     (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
-
-;; My Org Blog Setup
-;;(use-package blog
-;;  :after org
-;;  :straight (blog :local-repo "~/Code/Lisp/Blog" :type git :require (ox-rss ox-html)))
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
@@ -949,6 +926,10 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+
+;; ---------------
+;; Feed Reader
+;; ---------------
 ;; Organise feeds in an Org file
 (use-package elfeed-org
   :after (org elfeed)
@@ -1025,6 +1006,11 @@
 
 (use-package elfeed-web :after elfeed :defer t)
 
+
+;; ---------------
+;; Music Player
+;; ---------------
+
 ;; EMMS - Emacs Media Player
 (use-package emms
   :defer t
@@ -1078,6 +1064,28 @@
         (emms-start)))
     (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)))
 
+;; Org-Music Mode
+(use-package org-music
+  :straight (org-music :type git :host github :repo "debanjum/org-music")
+  :after (org emms)
+  :init (progn
+          (setq
+           org-music-file "~/Notes/Music.org"
+           org-music-media-directory "~/Music/Sync/Org/"
+           org-music-next-cloud-script "~/Code/bin/nextcloud.py"
+           org-music-operating-system "mac"
+           org-music-playlist-file "orgmusic-mac.m3u"
+           org-music-cache-size 100)
+          (add-hook
+           'org-mode-hook
+           (lambda()
+             (if (equal buffer-file-name (expand-file-name org-music-file))
+                 (org-music-mode))))))
+
+
+;; ---------------
+;; Diminish Modes
+;; ---------------
 (use-package diminish
   :diminish auto-revert-mode
   :diminish abbrev-mode
@@ -1096,6 +1104,7 @@
 
 (eval-after-load 'whitespace-cleanup-mode
   '(diminish 'whitespace-cleanup-mode))
+
 
 ;; ---------------
 ;; Theme
