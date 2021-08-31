@@ -451,6 +451,7 @@
 ;; emacs buffer, window persistence
 (setq desktop-save-mode 1
       desktop-path '("."))
+(desktop-save-mode)
 
 ;; as long as packages depend on cl instead of cl-lib this warning will remain
 (setq byte-compile-warnings '(cl-functions)) ;
