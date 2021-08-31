@@ -1,31 +1,20 @@
-;; Setup Package Managers
-(require 'package)
+;; Install Straight.el as Package Manager
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(setq package-archives '())
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(package-initialize)
-
-;; Install use-package
-(unless package-archive-contents
-  (package-refresh-contents))
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-;; Install Quelpa
-(unless (package-installed-p 'quelpa)
-  (with-temp-buffer
-    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
-    (eval-buffer)
-    (quelpa-self-upgrade)))
-
-;; Install Quelpa Use-Package
-(quelpa
- '(quelpa-use-package
-   :fetcher git
-   :url "https://github.com/quelpa/quelpa-use-package.git"))
-(require 'quelpa-use-package)
+;; Setup use-package
+(setq straight-use-package-by-default t)
+(straight-use-package 'use-package)
 
 ;; ---------------
 ;; Basic Config
@@ -37,9 +26,9 @@
 (toggle-scroll-bar -1)
 
 (use-package exec-path-from-shell
-  :ensure t
-  :config (when (memq window-system '(mac ns x))
-            (exec-path-from-shell-initialize)))
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 ;; Replace/Remove selection if present on yank/delete
 (delete-selection-mode)
@@ -193,6 +182,7 @@
 ;; Tools
 ;; ---------------
 (use-package dired
+  :straight (:type built-in)
   :bind (:map dired-mode-map
               ("C-c C-e" . wdired-change-to-wdired-mode))
   :init
@@ -206,22 +196,17 @@
 ;; NOTE: crux-move-beginning-of-line has been modified by me.
 ;;       Jumps to start of line first, jumps to first non-whitespace character if already at start of line
 (use-package crux
-  :ensure t
   :bind (("C-a" . crux-move-beginning-of-line)))
 
 ;; Allow defining keybinding chords via use-package
 (use-package use-package-chords
-  :ensure t
-  :config
-  (key-chord-mode 1))
+  :config (key-chord-mode 1))
 
 (use-package which-key
-  :ensure t
   :diminish which-key-mode
   :init (which-key-mode))
 
 (use-package avy
-  :ensure t
   :init
   (setq avy-keys-alist
         `((avy-goto-char-timer . (?j ?k ?l ?f ?s ?d ?e ?r ?u ?i))
@@ -232,15 +217,14 @@
           (:map isearch-mode-map ("C-'" . avy-isearch))))
 
 (use-package undo-tree
-  :ensure t
-  :diminish undo-tree-mode
+  :after (use-package-chords)
   :chords (("uu" . undo-tree-visualize))
+  :diminish undo-tree-mode
   :config (progn (global-undo-tree-mode 1)
                  (setq undo-tree-visualizer-timestamps t)
                  (setq undo-tree-visualizer-diff t)))
 
 (use-package dumb-jump
-  :ensure t
   :bind (("M-g o" . dumb-jump-go-other-window)
          ("M-g j" . dumb-jump-go)
          ("M-g b" . dumb-jump-back)
@@ -263,7 +247,6 @@
 
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
 (use-package whitespace-cleanup-mode
-  :ensure t
   :hook ((python-mode . whitespace-cleanup-mode)
          (org-mode . whitespace-cleanup-mode))
   :init (add-hook
@@ -272,19 +255,16 @@
 
 ;; Expand-Region for intelligent highlight expansion
 (use-package expand-region
-  :ensure t
   :bind ("C-=" . er/expand-region))
 
 ;; Faster window switching
 (use-package ace-window
-  :ensure t
   :bind (("C-x o" . ace-window))
   :config (progn
             (setq aw-keys '(?a ?s ?k ?l ?d ?j ?h ?f ?g))))
 
 ;; Ivy for completion function everywhere where ido isn't used (for now)
 (use-package ivy
-  :ensure t
   :diminish
   :bind (("C-c C-r" . ivy-resume)
          ("C-c C-j" . ivy-immediate-done)) ; default keybinding C-M-j conflicts with an MacOS keybinding
@@ -300,7 +280,6 @@
                                      (t      . ivy--regex-fuzzy)))))
 
 (use-package counsel
-  :ensure t
   :after (ivy use-package-chords)
   :diminish
   :chords (("yy" . counsel-yank-pop))
@@ -308,7 +287,6 @@
             (counsel-mode)))
 
 (use-package swiper
-  :ensure t
   :after ivy
   :bind (("C-s" . swiper)
          ("C-r" . swiper-backward)))
@@ -316,43 +294,38 @@
 ;; Amx for M-x persistent MRU for auto-completion. Replaces Smex as that's deprecated.
 ;; Amx can rely on Ivy via counsel-M-x or ido completion backend for fuzzy candidate matching etc.
 (use-package amx
-  :ensure t
   :config (amx-mode))
 
 ;; Recentf to suggest recently opened files on C-x C-r
 (use-package recentf
-  :ensure t
   :init (recentf-mode t)
   :bind ("C-x C-r" . counsel-recentf)  ;; replace `find-file-read-only` with more a useful command
   :config (setq recentf-max-saved-items 50))
 
 ;; To keep GNU ELPA Keyring up-to-date
-(use-package gnu-elpa-keyring-update
-  :ensure t)
+(use-package gnu-elpa-keyring-update)
 
 ;; Gnuplot for Plotting in org
-(use-package gnuplot :ensure t)
+(use-package gnuplot)
 
 ;; ag - the silver searcher
 (use-package ag
-  :ensure t
   :commands (ag ag-regexp ag-project)
   :config (setq ag-highlight-search t))
 
 ;; Magit for Git
 (use-package magit
-  :ensure t
-  :bind ("C-x g" . magit-status))
+  :bind ("C-x g" . magit-status)
+  :config (setq magit-diff-refine-hunk 'all))
 
 ;; Magit Find File
 (use-package magit-find-file
-  :ensure t
+  :after magit
   :bind ("C-c p" . magit-find-file-completing-read)
   :config (setq magit-completing-read-function 'ivy-completing-read))
 
 ;; Orgit: Support for Org links to Magit buffers
-(use-package orgit
-  :ensure t)
+(use-package orgit :after org)
 
 ;; Add user elisp load path
 (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -361,72 +334,71 @@
 ;(use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
 
 ;; Setup Mail: mu4e, smtpmail
-(use-package setup-mail)
+(load "setup-mail.el")
 
 ;; Company mode for Completion
-(use-package company :ensure t :defer t :diminish company-mode)
+(use-package company :defer t :diminish company-mode)
 
 ;; Beancount Company backend
 (use-package company-ledger
-  :ensure t
   :init
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-ledger)))
 
- ;; Trigger completion immediately.
+;; Trigger completion immediately.
 (setq company-idle-delay 0)
 
- ;; Number the candidates (use M-1, M-2 etc to select completions).
+;; Number the candidates (use M-1, M-2 etc to select completions).
 (setq company-show-numbers t)
 
 ;; Beancount Minor Mode
 ;; Get beancount.el from https://bitbucket.org/blais/beancount
 (use-package beancount
-  :hook (beancount-mode . company-mode)
+  :straight (beancount :type git :host github :repo "beancount/beancount-mode")
+  :after company
+  :hook ((beancount-mode . company-mode)
+         (beancount-mode . outline-minor-mode))
   :mode ("\\.bean\\'" . beancount-mode))
 
 ;; Nov.el Epub Reader Mode
 (use-package nov
-  :ensure t
   :ensure xml+
   :mode ("\\.epub\\'" . nov-mode))
 
 ;; Annotation for ebooks, pdf's etc in org files
 (use-package org-noter
-  :ensure t
+  :after org
   :config (progn
             (setq
              org-noter-auto-save-last-location t
              org-noter-notes-search-path '("~/Notes"))))
 
 (use-package org-randomnote
-  :ensure t
+  :after org
   :bind ("C-c r" . org-randomnote)
   :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org")))
 
-(use-package clip2org :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
+(use-package clip2org
+  :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
 
 ;; Drag and drop images/files to attach to org task
 (use-package org-download
-  :ensure t
+  :after org
   :config
   ;; add support to dired
   (add-hook 'dired-mode-hook 'org-download-enable)
   (setq org-download-screenshot-method "/usr/sbin/screencapture -s %s")
   (setq org-download-method 'attach))
 
-(use-package all-the-icons :ensure t) ;; icon set
+(use-package all-the-icons) ;; icon set
 
 (use-package flycheck
-  :ensure t
   :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
 (use-package ruby-mode
-  :ensure t
   :mode "\\.rb\\'")
 
 ;(use-package sonic-pi
-;  :ensure t
 ;  :config
 ;  (add-hook
 ;   'sonic-pi-mode-hook
@@ -436,8 +408,7 @@
 ;     (setq sonic-pi-server-bin "Contents/Resources/app/server/ruby/bin/sonic-pi-server.rb"))))
 
 (use-package plantuml-mode
-  :after org-mode
-  :ensure t
+  :after org
   :config
   (progn
     (setq
@@ -445,17 +416,33 @@
      (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
 
+(use-package ob-tmux
+  :after org
+  :custom
+  (org-babel-default-header-args:tmux
+   '((:results . "silent")     ;
+     (:session . "default")    ; The default tmux session to send code to
+     (:socket  . nil)          ; The default tmux socket to communicate with
+     (:terminal . "zsh")))
+  ;; The tmux sessions are prefixed with the following string.
+  ;; You can customize this if you like.
+  (org-babel-tmux-session-prefix ""))
+
+;; Org formatted clipboard URL formatted with Title from Webpage
+(use-package org-cliplink
+  :after org
+  :bind ("C-x p i" . 'org-cliplink))
+
+(use-package org-mime :after org)
 
 ;; ---------------
 ;; Major Packages
 ;; ---------------
-
 ;; Org-Mode
 (use-package org
   ;; Install package org-plus-contrib for org
-  :ensure org-plus-contrib
-  ;; Install from 'org' package archive
-  :pin org
+  :straight (org-contrib :includes (org))
+  :after cider
   ;; Load org in org-mode
   :mode (("\\.org$" . org-mode))
   ;; Bind keys
@@ -658,23 +645,6 @@
                                            (clojure . t)
                                            (js . t)
                                            (C . t)))
-            (use-package ob-tmux
-              :ensure t
-              :custom
-              (org-babel-default-header-args:tmux
-               '((:results . "silent")     ;
-                 (:session . "default")    ; The default tmux session to send code to
-                 (:socket  . nil)          ; The default tmux socket to communicate with
-                 (:terminal . "zsh")))
-              ;; The tmux sessions are prefixed with the following string.
-              ;; You can customize this if you like.
-              (org-babel-tmux-session-prefix ""))
-
-            ;; Org formatted clipboard URL formatted with Title from Webpage
-            (use-package org-cliplink
-              :ensure t
-              :bind ("C-x p i" . 'org-cliplink))
-
             ;; Github Link Formatter
             (defun gitlink (tag)
               "converts github issues, pull requests into valid format"
@@ -761,7 +731,6 @@
             ;;task state dependency chaining
             (require 'org-depend)
 
-            (use-package org-mime :ensure t)
             (defun htmlize-and-send ()
               "When in an org-mu4e-compose-org-mode message, htmlize and send it."
               (interactive)
@@ -777,7 +746,7 @@
             ))
 
 (use-package org-drill
-  :ensure t
+  :after org
   :config (progn
             (setq org-drill-add-random-noise-to-intervals-p t) ; add random noise to repeat interval
 
@@ -790,13 +759,10 @@
               (org-drill)
               (save-buffer))))
 
-;; My Org Blog Setup
-(use-package blog
-  :load-path "lisp/blog.el")
-
 ;; Org-Music Mode
 (use-package org-music
-  :load-path "lisp/org-music.el"
+  :straight (org-music :type git :host github :repo "debanjum/org-music")
+  :after org
   :init (progn
           (setq
            org-music-file "~/Notes/Music.org"
@@ -813,31 +779,43 @@
 
 ;; Org-Media-Annotation Mode
 (use-package org-media-annotation
-  :load-path "lisp/org-media-annotation.el")
+  :after (emms org)
+  :straight
+  (org-media-annotation
+   :local-repo "~/Code/Lisp/org-media-annotation"
+   :type git))
 
 ;; Org QL
-(use-package org-ql
-  :ensure t)
+(use-package org-ql :after org)
+(use-package helm-org-ql :after org)
 
 ;; Org-Semantic Search Library
 (use-package semantic-search
-  :quelpa (semantic-search :fetcher github-ssh :repo "debanjum/emacs-semantic-search")
+  :after (org org-music)
+  :straight (semantic-search
+             :type git
+             :host github
+             :repo "debanjum/semantic-search"
+             :files (:defaults "src/interface/emacs/semantic-search.el"))
   :bind ("C-c s" . 'semantic-search))
+
+;; My Org Blog Setup
+;;(use-package blog
+;;  :after org
+;;  :straight (blog :local-repo "~/Code/Lisp/Blog" :type git :require (ox-rss ox-html)))
 
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
 ;; Try evil for modal navigation, editing
-(use-package evil :ensure t)
-;(use-package evil-org :ensure t)
+(use-package evil)
+;;(use-package evil-org :ensure t)
 
 ;; Csharp Mode
-(use-package csharp-mode
-  :ensure t)
+(use-package csharp-mode)
 
 ;; Elpy for Python
 (use-package elpy
-  :ensure t
   :commands elpy-enable
   :init (with-eval-after-load 'python (elpy-enable))
   :config (progn
@@ -851,13 +829,11 @@
 
 ;; Clojure
 (use-package clojure-mode
-  :ensure t
   :hook (clojure-mode . eldoc-mode)
   :mode (("\\.clj\\'" . clojure-mode)
          ("\\.edn\\'" . clojure-mode)))
 
 (use-package cider
-  :ensure t
   :defer t
   :hook (cider-mode . eldoc-mode)
   :init (add-hook 'cider-mode-hook #'clj-refactor-mode)
@@ -874,34 +850,29 @@
 
 (use-package clj-refactor
   :defer t
-  :ensure t
   :diminish clj-refactor-mode
   :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
 ;; Rust Mode
-(use-package rust-mode :ensure t)
+(use-package rust-mode)
 (use-package cargo
-  :ensure t
   :hook (rust-mode . cargo-minor-mode))
 
 ;; Install Haskell-Mode
-(use-package haskell-mode :ensure t)
+(use-package haskell-mode)
 
 ;; Dante for Haskell
 (use-package dante
-  :ensure t
   :after haskell-mode
   :commands 'dante-mode
   :init
   (add-hook 'haskell-mode-hook 'dante-mode))
 
 ;; Tidal for Live Coding Music in Haskell
-(use-package tidal
-  :ensure t)
+(use-package tidal)
 
 ;; Web-Mode for HTML
 (use-package web-mode
-  :ensure t
   :mode (("\\.html\\'" . web-mode)
          ("\\.tsx\\'" . web-mode))
   :config (progn
@@ -923,7 +894,6 @@
 
 ;; Js2-Mode for Javascript
 (use-package js2-mode
-  :ensure t
   :mode (("\\.js\\'" . js2-mode)
          ("\\.json\\'" . javascript-mode))
   :interpreter ("node" . js2-mode)
@@ -938,9 +908,8 @@
   :hook (tern-mode .js2-mode))
 
 ;; Tern for Javascript
-(use-package tern :ensure t :defer t)
+(use-package tern :defer t)
 (use-package tern-auto-complete
-  :ensure t
   :commands tern-ac-setup
   :init (with-eval-after-load 'tern (tern-ac-setup)))
 
@@ -956,7 +925,6 @@
   (company-mode +1))
 
 (use-package tide
-  :ensure t
   :hook ((typescript-mode . setup-tide-mode)
          (before-save . tide-format-before-save))
   :config (progn
@@ -979,7 +947,6 @@
 
 ;; Markdown Mode
 (use-package markdown-mode
-  :ensure t
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -989,7 +956,7 @@
 
 ;; Organise feeds in an Org file
 (use-package elfeed-org
-  :ensure t
+  :after (org elfeed)
   :config (progn
             (elfeed-org)
             (setq rmh-elfeed-org-files (list (expand-file-name "~/Notes/Feed.org")))))
@@ -1049,7 +1016,6 @@
 (add-hook 'elfeed-new-entry-hook #'elfeed-junk-filter)
 
 (use-package elfeed
-  :ensure t
   :defer t
   :init (setq elfeed-db-directory "~/Notes/.elfeed")
   :bind (:map elfeed-search-mode-map
@@ -1062,11 +1028,10 @@
               ("A" . deb/elfeed-all)
               ("q" . deb/elfeed-save-bury)))
 
-(use-package elfeed-web :ensure t :defer t)
+(use-package elfeed-web :after elfeed :defer t)
 
 ;; EMMS - Emacs Media Player
 (use-package emms
-  :ensure t
   :defer t
   :bind
   (("C-c e SPC" . emms-pause)
@@ -1119,7 +1084,6 @@
     (add-hook 'emms-browser-tracks-added-hook 'ambrevar/emms-play-on-add)))
 
 (use-package diminish
-  :ensure t
   :diminish auto-revert-mode
   :diminish abbrev-mode
   :diminish undo-tree-mode
@@ -1153,7 +1117,6 @@
 ;; Solarized Emacs Theme @ https://github.com/bbatsov/solarized-emacs
 ;; If theme not loaded => init.el (partial) failed
 (use-package solarized-theme
-  :ensure t
   :init (progn
           ;; Don't change size of org-mode headlines (but keep other size-changes)
           (setq solarized-scale-org-headlines nil)
