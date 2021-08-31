@@ -19,6 +19,303 @@
 ;; ---------------
 ;; Basic Config
 ;; ---------------
+(use-package all-the-icons) ;; icon set
+
+;; Org-Mode
+(use-package org
+  ;; Install package org-contrib for org
+  ;;:straight (org-contrib :includes (org))
+  ;; Load org in org-mode
+  :mode (("\\.org$" . org-mode))
+  ;; Bind keys
+  :bind (("C-c c" . org-capture)
+         ("C-c l" . org-store-link)
+         ("C-c a" . org-agenda))
+  ;; Configure before loading org.el
+  :init (progn
+          (setq
+           ;; Export backends. Needs to be set before org.el is loaded
+           org-export-backends '(ascii html icalendar latex md org odt)
+           org-export-coding-system 'utf-8
+           org-export-babel-evaluate nil
+           org-export-with-sub-superscripts nil  ; _, ^ aren't exported to sub/superscript
+
+           ;; Org-Calendar Export
+           org-icalendar-combined-agenda-file (expand-file-name "~/Sync/Phone/agenda.ics")
+           org-icalendar-combined-name "D's Org Agenda"
+           org-icalendar-use-scheduled '(todo-start event-if-todo)
+           org-icalendar-use-deadline '(todo-due event-if-todo)
+           org-icalendar-store-UID t
+           org-icalendar-include-todo 'all
+           ))
+
+  ;; Configure org
+  :config (progn
+            (setq
+             org-log-done t
+             org-log-into-drawer t
+             org-reverse-note-order t
+
+             ;; Speed Commands
+             org-use-speed-commands t
+
+             ;; Allow user specified scaling of org-inline images.
+             org-image-actual-width nil
+
+             ;; Allow setting scheduled time if multiple entries selected
+             org-loop-over-headlines-in-active-region t
+
+             ;; Prevent invisible edits and show region
+             org-catch-invisible-edits 'show-and-error
+
+             ;; Enforce TODO dependency chains
+             org-enforce-todo-dependencies t
+
+             ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
+             org-agenda-dim-blocked-tasks nil
+
+             ;; Allow multiple agenda views to be visible at same time
+             ;; Show existing agenda buffers instead of generating new ones every time
+             org-agenda-sticky t
+
+             ;; Set Org-Files for Agenda
+             org-directory "~/Notes/"
+             org-agenda-files (list (concat org-directory "Schedule.org"))
+             org-archive-location (concat org-directory "Archive.org::* %s")
+
+             ;; Attachments
+             org-attach-id-dir "~/Notes/data/"
+
+             ;; Org-Babel
+             ;; set cider as org babel clojure backend
+             org-babel-clojure-backend 'cider
+             ;; execute without confirmation
+             org-confirm-babel-evaluate nil
+             ;; Syntax hilighting of code blocks
+             org-src-fontify-natively t
+             ;; Auto-indent of code blocks
+             org-src-tab-acts-natively t
+
+             ;; Org-Mode Link Search
+             org-link-search-must-match-exact-headline nil
+
+             ;; Default to Boolean Search
+             org-agenda-search-view-always-boolean t
+             org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
+
+             org-publish-project-alist
+             `(
+               ("work"
+                :base-directory "~/Notes/"
+                :base-extension "org"
+                :publishing-directory "~/Public/Workstation/"
+                :exclude ".*"
+                :include ("Schedule.org")
+                :exclude-tags ("DATALAD" "CEERI" "HH" "PERSONAL" "TRAVEL" "JobStudy")
+                :select-tags ("WORK")
+                :with-timestamps t
+                :with-tasks t
+                :with-tags t
+                :with-tables t
+                :with-priority t
+                :with-planning t
+                :publishing-function org-org-publish-to-org
+                )
+               )
+
+             ;; Include Org Modules
+             org-modules '(org-habit)
+
+             ; Org-Habit Settings
+             org-habit-preceding-days 30
+             org-habit-following-days 3
+             org-habit-graph-column 80
+
+             ;; Org Agenda To-Do/Tag-Match Ignore Scheduled/Deadlined Tasks
+             ;; Allows view of "non-assigned/processed" tasks
+             org-agenda-todo-ignore-scheduled 'all
+             org-agenda-todo-ignore-deadlines 'all
+             org-agenda-tags-todo-honor-ignore-options t
+
+             ;; Custom Agenda's:
+             org-agenda-custom-commands
+             '(
+               ("A" "Immediate Tasks" todo "TODO|ACTIVE|WAITING")
+               ("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
+                ((org-agenda-files '("~/Notes/Music.org"))
+                 (org-agenda-text-search-extra-files nil))))
+
+             ;; Set custom faces for categories in agenda
+             org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
+                                              ("Habit" ,(list (all-the-icons-faicon "circle-o-notch")) nil nil :ascent center)
+                                              ("Music" ,(list (all-the-icons-faicon "youtube-play")) nil nil :ascent center)
+                                              ("" ,(list (all-the-icons-faicon "clock-o")) nil nil :ascent center))
+
+             ;; Set Effort Estimates, Column View
+             org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
+             org-columns-default-format "%80ITEM(Task) %7TODO(State) %10Effort(Effort){:} %CLOCKSUM(Clocked) %TAGS(Tags)"
+
+             ;; Set Tags, Tag Groups and Columns Width
+             org-tags-column -78
+             org-tag-alist '((:startgroup) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup)
+                             (:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
+                             (:startgroup) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup)
+                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) (:endgroup)
+                             (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L) (:endgroup)
+                             ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
+
+             ;; Customise Refile (C-c C-w)
+             org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
+             org-outline-path-complete-in-steps nil ;; use TAB for completion
+             org-refile-use-cache t  ;; use cache for speed-up
+             org-refile-targets '((nil :maxlevel . 4) ;; refile-target = depth 4 in agenda files
+                                  (org-agenda-files :maxlevel . 4))
+
+             ;; Setup Org Capture
+             org-default-notes-file (concat org-directory "Schedule.org")
+             org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "PROJECTS")
+                                      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
+
+                                     ;; Ask For Heading, then TAGS, then let user edit entry
+                                     ("i" "Incoming" entry (file+headline "Incoming.org" "RESOURCES")
+                                      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
+
+                                     ;; Ask For Heading, then TAGS, then let user edit entry
+                                     ("n" "Note" entry (file+headline "Incoming.org" "RESOURCES")
+                                      "** %U\n   %?" :prepend t :kill-buffer t)
+
+                                     ;; Jumps to clocked in entry
+                                     ("a" "Append to Clocked" item (clock) "\t%i %?")
+
+                                     ;; For Web/Mail Capture
+                                     ("m" "Mail" entry (file+headline "Schedule.org" "PROJECTS")
+                                      "** TODO %^{Title} :WEB:READ:\n   CAPTURED: %U\n   %?" :prepend t :empty-lines 1)
+
+                                     ;; For Web/Mail Capture
+                                     ("p" "Plan for Today" entry (id "2f6dbcf9-20f0-4341-8390-e51a987a3e01")
+                                      "*** %u: Plan for Today\n    - [%] Major\n      - [ ] %?\n    - [%] Minor\n" :prepend t :empty-lines 1)
+
+                                     ;; Create Work Entry with :Work: tag. Note capture time, location
+                                     ("w" "Work" entry (file+headline "Schedule.org" "PROJECTS")
+                                      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
+                                      :prepend t :kill-buffer t :empty-lines 1)
+
+                                     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
+                                     ("c" "Meeting" entry (file+headline "Schedule.org" "PROJECTS")
+                                      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
+                                      :prepend t :empty-lines 1)))
+
+            ;; Org-Babel tangle
+            (require 'ob-tangle)
+            (require 'ob-clojure)
+            ;; (require 'cider)
+            (load "ob-sudo.el")
+
+            ;; Setup Babel languages. Can now do Literate Programming
+            (org-babel-do-load-languages 'org-babel-load-languages
+                                         '((python . t)
+                                           (shell . t)
+                                           (sudo . t)  ;; ob-sudo. try sudo in babel instead of using :dir "sudo::/path/to/dir"
+                                           (emacs-lisp . t)
+                                           (ledger . t)
+                                           (ditaa . t)
+                                           (plantuml . t)
+                                           (clojure . t)
+                                           (js . t)
+                                           (C . t)))
+            ;; Github Link Formatter
+            (defun gitlink (tag)
+              "converts github issues, pull requests into valid format"
+              (setq ghsplit (split-string tag "/"))
+              (if (string-match-p (regexp-quote "i#") (car (last ghsplit)))
+                  (concat (pop ghsplit) "/" (pop ghsplit) "/issues/" (substring (pop ghsplit) 2 nil))
+                (if (string-match-p (regexp-quote "p#") (car (last ghsplit)))
+                    (concat (pop ghsplit) "/" (pop ghsplit) "/pull/" (substring (pop ghsplit) 2 nil))
+                  (concat "" tag))))
+
+            ;; Shorthand for links
+            (setq org-link-abbrev-alist '(("github" . "https://github.com/%(gitlink)")
+                                          ("gitlab" . "https://gitlab.com/%(gitlink)")
+                                          ("google" . "https://www.google.com/search?q=%s")
+                                          ("gmap"   . "https://maps.google.com/maps?q=%s")
+                                          ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
+                                          ("transaction" . "file:Ledger.bean::%s")))
+
+            ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
+            (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
+            (org-link-set-parameters
+             "thunderlink"
+             :follow 'org-thunderlink-open
+             :face '(:foreground "dodgerblue" :underline t))
+
+            (org-link-set-parameters
+             "mu4e"
+             :face '(:foreground "dodgerblue" :underline t))
+
+            (org-link-set-parameters
+             "C"
+             :follow '(lambda(path) (message "Link only available on Windows"))
+             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+            (org-link-set-parameters
+             "E"
+             :follow '(lambda(path) (message "Link only available on Windows"))
+             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
+
+            (org-link-set-parameters
+             "outlook"
+             :follow '(lambda(path) (message "Outlook not available on linux"))
+             :face '(:foreground "dodgerblue" :underline t :strike-through t)
+             :help-echo "Outlook not available on this machine")
+
+             ;; Refresh org-refile cache on Emacs idle > 5 mins
+             (run-with-idle-timer 900 t (lambda ()
+                                          (org-refile-cache-clear)
+                                          (org-refile-get-targets)))
+
+            (defun d/org-id-complete-link (&optional arg)
+              "Create an id: link using completion"
+              (concat "id:" (org-id-get-with-outline-path-completion
+                             '((nil :maxlevel . 4)
+                               (org-agenda-files :maxlevel . 4)))))
+
+            (defun d/org-id-complete-link-description (link desc)
+              (if (and (string-prefix-p "id:" link)
+                       (or (not desc) (string= "" desc)))
+                  (let* ((id (string-remove-prefix "id:" link)))
+                    (save-excursion
+                      (org-id-goto id)
+                      (nth 4 (org-heading-components))))
+                desc))
+
+            ;; Store id based link to org entry at point via C-c l
+            (setq org-id-link-to-org-use-id t)
+
+            ;; Set org entry heading/title as default description for id:<id> type links
+            (setq org-link-make-description-function #'d/org-id-complete-link-description)
+
+            (org-link-set-parameters
+             "id"
+             :complete 'd/org-id-complete-link)
+
+            ;;store org-mode links to messages
+            (require 'org-mu4e)
+            ;;store link to query if in header view, not the message cursor is currently on
+            (setq org-mu4e-link-query-in-headers-mode t)
+
+            (defun htmlize-and-send ()
+              "When in an org-mu4e-compose-org-mode message, htmlize and send it."
+              (interactive)
+              (when (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+                (org-mime-htmlize)
+                (message-send-and-exit)))
+            (add-hook 'org-ctrl-c-ctrl-c-hook 'htmlize-and-send t)
+
+            (defun deb/upsert-org-entry-ids ()
+              "Add/update ID of all visible entry. Useful after copying subtree to prevent duplicate ids"
+              (interactive)
+              (org-map-entries '(lambda () (org-id-get-create t))))
+            ))
 
 ;; Disable menu, toolbar, scrollbar
 (tool-bar-mode -1)
@@ -178,6 +475,15 @@
   (setq-default ispell-program-name "aspell")
   (setq ispell-extra-args '("--sug-mode=ultra" "--camel-case")))
 
+;; Add user elisp load path
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; Setup Mail: mu4e, smtpmail
+(load "setup-mail.el")
+
+;; Load custom macros
+(load "custom-macros.el")
+
 ;; ---------------
 ;; Tools
 ;; ---------------
@@ -189,6 +495,7 @@
   (setq dired-dwim-target t
         dired-recursive-copies 'top
         dired-recursive-deletes 'top
+        dired-use-ls-dired nil
         dired-listing-switches "-alh")
   :hook (dired-mode . dired-hide-details-mode))
 
@@ -324,18 +631,6 @@
   :bind ("C-c p" . magit-find-file-completing-read)
   :config (setq magit-completing-read-function 'ivy-completing-read))
 
-;; Orgit: Support for Org links to Magit buffers
-(use-package orgit :after org)
-
-;; Add user elisp load path
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-
-;; Zeitgiest Integration
-;(use-package zeitgeist)  ;; not portable, but doesn't block/fail emacs load
-
-;; Setup Mail: mu4e, smtpmail
-(load "setup-mail.el")
-
 ;; Company mode for Completion
 (use-package company :defer t :diminish company-mode)
 
@@ -365,6 +660,33 @@
   :ensure xml+
   :mode ("\\.epub\\'" . nov-mode))
 
+(use-package flycheck
+  :config (setq flycheck-emacs-lisp-load-path 'inherit))
+
+(use-package ruby-mode
+  :mode "\\.rb\\'")
+
+;(use-package sonic-pi
+;  :config
+;  (add-hook
+;   'sonic-pi-mode-hook
+;   (lambda ()
+;     ;; This setq can go here instead if you wish
+;     (setq sonic-pi-path "/Applications/Sonic\ Pi.app/")
+;     (setq sonic-pi-server-bin "Contents/Resources/app/server/ruby/bin/sonic-pi-server.rb"))))
+
+;; ---------------
+;; Major Packages
+;; ---------------
+
+(use-package org-contrib
+  :straight (:includes (org-contacts org-depend))
+  :config (setq org-contacts-files
+                (list (expand-file-name "~/Notes/Contacts.org"))))
+
+;; Orgit: Support for Org links to Magit buffers
+(use-package orgit :after (org magit))
+
 ;; Annotation for ebooks, pdf's etc in org files
 (use-package org-noter
   :after org
@@ -390,32 +712,6 @@
   (setq org-download-screenshot-method "/usr/sbin/screencapture -s %s")
   (setq org-download-method 'attach))
 
-(use-package all-the-icons) ;; icon set
-
-(use-package flycheck
-  :config (setq flycheck-emacs-lisp-load-path 'inherit))
-
-(use-package ruby-mode
-  :mode "\\.rb\\'")
-
-;(use-package sonic-pi
-;  :config
-;  (add-hook
-;   'sonic-pi-mode-hook
-;   (lambda ()
-;     ;; This setq can go here instead if you wish
-;     (setq sonic-pi-path "/Applications/Sonic\ Pi.app/")
-;     (setq sonic-pi-server-bin "Contents/Resources/app/server/ruby/bin/sonic-pi-server.rb"))))
-
-(use-package plantuml-mode
-  :after org
-  :config
-  (progn
-    (setq
-     org-plantuml-jar-path
-     (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
-
 (use-package ob-tmux
   :after org
   :custom
@@ -434,316 +730,6 @@
   :bind ("C-x p i" . 'org-cliplink))
 
 (use-package org-mime :after org)
-
-;; ---------------
-;; Major Packages
-;; ---------------
-;; Org-Mode
-(use-package org
-  ;; Install package org-plus-contrib for org
-  :straight (org-contrib :includes (org))
-  :after cider
-  ;; Load org in org-mode
-  :mode (("\\.org$" . org-mode))
-  ;; Bind keys
-  :bind (("C-c c" . org-capture)
-         ("C-c l" . org-store-link)
-         ("C-c a" . org-agenda))
-  ;; Configure before loading org.el
-  :init (progn
-          (setq
-           ;; Export backends. Needs to be set before org.el is loaded
-           org-export-backends '(ascii html icalendar latex md org odt)
-           org-export-coding-system 'utf-8
-           org-export-babel-evaluate nil
-           org-export-with-sub-superscripts nil  ; _, ^ aren't exported to sub/superscript
-
-           ;; Org-Calendar Export
-           org-icalendar-combined-agenda-file (expand-file-name "~/Sync/Phone/agenda.ics")
-           org-icalendar-combined-name "D's Org Agenda"
-           org-icalendar-use-scheduled '(todo-start event-if-todo)
-           org-icalendar-use-deadline '(todo-due event-if-todo)
-           org-icalendar-store-UID t
-           org-icalendar-include-todo 'all
-           ))
-
-  ;; Configure org
-  :config (progn
-            (setq
-             org-log-done t
-             org-log-into-drawer t
-             org-reverse-note-order t
-
-             ;; Speed Commands
-             org-use-speed-commands t
-
-             ;; Allow user specified scaling of org-inline images.
-             org-image-actual-width nil
-
-             ;; Allow setting scheduled time if multiple entries selected
-             org-loop-over-headlines-in-active-region t
-
-             ;; Prevent invisible edits and show region
-             org-catch-invisible-edits 'show-and-error
-
-             ;; Enforce TODO dependency chains
-             org-enforce-todo-dependencies t
-
-             ;; Don't dim blocked tasks. Speeds up agenda generation and don't need it always on globally
-             org-agenda-dim-blocked-tasks nil
-
-             ;; Allow multiple agenda views to be visible at same time
-             ;; Show existing agenda buffers instead of generating new ones every time
-             org-agenda-sticky t
-
-             ;; Set Org-Files for Agenda
-             org-directory "~/Notes/"
-             org-agenda-files (list (concat org-directory "Schedule.org"))
-             org-archive-location (concat org-directory "Archive.org::* %s")
-
-             ;; Mobile Org Settings
-             org-mobile-directory "~/Dropbox/Notes/"
-             org-mobile-files (list "Schedule.org" "Incoming.org")
-             org-mobile-inbox-for-pull (concat org-directory "Schedule.org")
-
-             ;; Attachments
-             org-attach-id-dir "~/Notes/data/"
-
-             ;; Org-Babel
-             ;; set cider as org babel clojure backend
-             org-babel-clojure-backend 'cider
-             ;; execute without confirmation
-             org-confirm-babel-evaluate nil
-             ;; Syntax hilighting of code blocks
-             org-src-fontify-natively t
-             ;; Auto-indent of code blocks
-             org-src-tab-acts-natively t
-
-             ;; Org-Mode Link Search
-             org-link-search-must-match-exact-headline nil
-
-             ;; Default to Boolean Search
-             org-agenda-search-view-always-boolean t
-             org-agenda-text-search-extra-files (list "~/Notes/Incoming.org" "~/Notes/Archive.org")
-
-             org-publish-project-alist
-             `(
-               ("work"
-                :base-directory "~/Notes/"
-                :base-extension "org"
-                :publishing-directory "~/Public/Workstation/"
-                :exclude ".*"
-                :include ("Schedule.org")
-                :exclude-tags ("DATALAD" "CEERI" "HH" "PERSONAL" "TRAVEL" "JobStudy")
-                :select-tags ("WORK")
-                :with-timestamps t
-                :with-tasks t
-                :with-tags t
-                :with-tables t
-                :with-priority t
-                :with-planning t
-                :publishing-function org-org-publish-to-org
-                )
-               )
-
-             ;; Include Org Modules
-             org-modules '(org-habit)
-
-             ; Org-Habit Settings
-             org-habit-preceding-days 30
-             org-habit-following-days 3
-             org-habit-graph-column 80
-
-             ;; Org Agenda To-Do/Tag-Match Ignore Scheduled/Deadlined Tasks
-             ;; Allows view of "non-assigned/processed" tasks
-             org-agenda-todo-ignore-scheduled 'all
-             org-agenda-todo-ignore-deadlines 'all
-             org-agenda-tags-todo-honor-ignore-options t
-
-             ;; Custom Agenda's:
-             org-agenda-custom-commands
-             '(
-               ("A" "Immediate Tasks" todo "TODO|ACTIVE|WAITING")
-               ("p" "Play Music" search ""                     ;; this triggers search in given restricted file, but need to pass search term
-                ((org-agenda-files '("~/Notes/Music.org"))
-                 (org-agenda-text-search-extra-files nil))))
-
-             ;; Set custom faces for categories in agenda
-             org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
-                                              ("Habit" ,(list (all-the-icons-faicon "circle-o-notch")) nil nil :ascent center)
-                                              ("Music" ,(list (all-the-icons-faicon "youtube-play")) nil nil :ascent center)
-                                              ("" ,(list (all-the-icons-faicon "clock-o")) nil nil :ascent center))
-
-             ;; Set Effort Estimates, Column View
-             org-global-properties (quote (("Effort_ALL" . "0:15 0:30 1:00 2:00 4:00 8:00 16:00")))
-             org-columns-default-format "%80ITEM(Task) %7TODO(State) %10Effort(Effort){:} %CLOCKSUM(Clocked) %TAGS(Tags)"
-
-             ;; Set Tags, Tag Groups and Columns Width
-             org-tags-column -78
-             org-tag-alist '((:startgroup) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup)
-                             (:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
-                             (:startgroup) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup)
-                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) (:endgroup)
-                             (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L) (:endgroup)
-                             ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
-
-             ;; Customise Refile (C-c C-w)
-             org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
-             org-outline-path-complete-in-steps nil ;; use TAB for completion
-             org-refile-use-cache t  ;; use cache for speed-up
-             org-refile-targets '((nil :maxlevel . 4) ;; refile-target = depth 4 in agenda files
-                                  (org-agenda-files :maxlevel . 4))
-
-             ;; Setup Org Capture
-             org-default-notes-file (concat org-directory "Schedule.org")
-             org-capture-templates '(("s" "Schedule" entry (file+headline "Schedule.org" "PROJECTS")
-                                      "** TODO %^{Plan} %^g\n%?\n" :prepend t :kill-buffer t :empty-lines 1)
-
-                                     ;; Ask For Heading, then TAGS, then let user edit entry
-                                     ("i" "Incoming" entry (file+headline "Incoming.org" "RESOURCES")
-                                      "** %?\n   CAPTURED: %U\n  LOCATION: [[file:%F::%i][filelink]] | %a\n" :prepend t :kill-buffer t)
-
-                                     ;; Ask For Heading, then TAGS, then let user edit entry
-                                     ("n" "Note" entry (file+headline "Incoming.org" "RESOURCES")
-                                      "** %U\n   %?" :prepend t :kill-buffer t)
-
-                                     ;; Jumps to clocked in entry
-                                     ("a" "Append to Clocked" item (clock) "\t%i %?")
-
-                                     ;; For Web/Mail Capture
-                                     ("m" "Mail" entry (file+headline "Schedule.org" "PROJECTS")
-                                      "** TODO %^{Title} :WEB:READ:\n   CAPTURED: %U\n   %?" :prepend t :empty-lines 1)
-
-                                     ;; For Web/Mail Capture
-                                     ("p" "Plan for Today" entry (id "2f6dbcf9-20f0-4341-8390-e51a987a3e01")
-                                      "*** %u: Plan for Today\n    - [%] Major\n      - [ ] %?\n    - [%] Minor\n" :prepend t :empty-lines 1)
-
-                                     ;; Create Work Entry with :Work: tag. Note capture time, location
-                                     ("w" "Work" entry (file+headline "Schedule.org" "PROJECTS")
-                                      "** TODO %^{Title} :WORK:%^G\n   CAPTURED: %U\n   LOCATION: [[file:%F::%i][filelink]] | %a\n   %?"
-                                      :prepend t :kill-buffer t :empty-lines 1)
-
-                                     ;; Create Meeting Entry with :Call: tag. Note capture time, people, meeting location
-                                     ("c" "Meeting" entry (file+headline "Schedule.org" "PROJECTS")
-                                      "** TODO %^{Title} :CALL:%^G\n   CAPTURED: %U\n   LOCATION: %^{Where?}\n   PEOPLE: %^{Who?}\n   %?"
-                                      :prepend t :empty-lines 1)))
-
-            ;; Org-Babel tangle
-            (require 'ob-tangle)
-            (require 'ob-clojure)
-            (require 'cider)
-
-            ;; Setup Babel languages. Can now do Literate Programming
-            (org-babel-do-load-languages 'org-babel-load-languages
-                                         '((python . t)
-                                           (shell . t)
-                                           (sudo . t)  ;; ob-sudo. try sudo in babel instead of using :dir "sudo::/path/to/dir"
-                                           (emacs-lisp . t)
-                                           (ledger . t)
-                                           (ditaa . t)
-                                           (plantuml . t)
-                                           (clojure . t)
-                                           (js . t)
-                                           (C . t)))
-            ;; Github Link Formatter
-            (defun gitlink (tag)
-              "converts github issues, pull requests into valid format"
-              (setq ghsplit (split-string tag "/"))
-              (if (string-match-p (regexp-quote "i#") (car (last ghsplit)))
-                  (concat (pop ghsplit) "/" (pop ghsplit) "/issues/" (substring (pop ghsplit) 2 nil))
-                (if (string-match-p (regexp-quote "p#") (car (last ghsplit)))
-                    (concat (pop ghsplit) "/" (pop ghsplit) "/pull/" (substring (pop ghsplit) 2 nil))
-                  (concat "" tag))))
-
-            ;; Shorthand for links
-            (setq org-link-abbrev-alist '(("github" . "https://github.com/%(gitlink)")
-                                          ("gitlab" . "https://gitlab.com/%(gitlink)")
-                                          ("google" . "https://www.google.com/search?q=%s")
-                                          ("gmap"   . "https://maps.google.com/maps?q=%s")
-                                          ("osm"    . "https://nominatim.openstreetmap.org/search?q=%s&polygon=1")
-                                          ("transaction" . "file:Ledger.bean::%s")))
-
-            ;; Thunderlink. Open an email in Thunderbird with ThunderLink.
-            (defun org-thunderlink-open (path) (start-process "myname" nil "thunderbird" "-thunderlink" (concat "thunderlink:" path)))
-            (org-link-set-parameters
-             "thunderlink"
-             :follow 'org-thunderlink-open
-             :face '(:foreground "dodgerblue" :underline t))
-
-            (org-link-set-parameters
-             "mu4e"
-             :face '(:foreground "dodgerblue" :underline t))
-
-            (org-link-set-parameters
-             "C"
-             :follow '(lambda(path) (message "Link only available on Windows"))
-             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
-
-            (org-link-set-parameters
-             "E"
-             :follow '(lambda(path) (message "Link only available on Windows"))
-             :face '(:foreground "darkgoldenrod" :underline t :strike-through t))
-
-            (org-link-set-parameters
-             "outlook"
-             :follow '(lambda(path) (message "Outlook not available on linux"))
-             :face '(:foreground "dodgerblue" :underline t :strike-through t)
-             :help-echo "Outlook not available on this machine")
-
-             ;; Refresh org-refile cache on Emacs idle > 5 mins
-             (run-with-idle-timer 900 t (lambda ()
-                                          (org-refile-cache-clear)
-                                          (org-refile-get-targets)))
-
-            (defun d/org-id-complete-link (&optional arg)
-              "Create an id: link using completion"
-              (concat "id:" (org-id-get-with-outline-path-completion
-                             '((nil :maxlevel . 4)
-                               (org-agenda-files :maxlevel . 4)))))
-
-            (defun d/org-id-complete-link-description (link desc)
-              (if (and (string-prefix-p "id:" link)
-                       (or (not desc) (string= "" desc)))
-                  (let* ((id (string-remove-prefix "id:" link)))
-                    (save-excursion
-                      (org-id-goto id)
-                      (nth 4 (org-heading-components))))
-                desc))
-
-            ;; Store id based link to org entry at point via C-c l
-            (setq org-id-link-to-org-use-id t)
-
-            ;; Set org entry heading/title as default description for id:<id> type links
-            (setq org-link-make-description-function #'d/org-id-complete-link-description)
-
-            (org-link-set-parameters
-             "id"
-             :complete 'd/org-id-complete-link)
-
-            ;;store org-mode links to messages
-            (require 'org-mu4e)
-            ;;store link to query if in header view, not the message cursor is currently on
-            (setq org-mu4e-link-query-in-headers-mode t)
-
-            (require 'org-contacts)
-            (setq org-contacts-files (list (expand-file-name "~/Notes/Contacts.org")))
-
-            ;;task state dependency chaining
-            (require 'org-depend)
-
-            (defun htmlize-and-send ()
-              "When in an org-mu4e-compose-org-mode message, htmlize and send it."
-              (interactive)
-              (when (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
-                (org-mime-htmlize)
-                (message-send-and-exit)))
-            (add-hook 'org-ctrl-c-ctrl-c-hook 'htmlize-and-send t)
-
-            (defun deb/upsert-org-entry-ids ()
-              "Add/update ID of all visible entry. Useful after copying subtree to prevent duplicate ids"
-              (interactive)
-              (org-map-entries '(lambda () (org-id-get-create t))))
-            ))
 
 (use-package org-drill
   :after org
@@ -798,6 +784,15 @@
              :repo "debanjum/semantic-search"
              :files (:defaults "src/interface/emacs/semantic-search.el"))
   :bind ("C-c s" . 'semantic-search))
+
+(use-package plantuml-mode
+  :after org
+  :config
+  (progn
+    (setq
+     org-plantuml-jar-path
+     (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
 
 ;; My Org Blog Setup
 ;;(use-package blog
@@ -1101,14 +1096,6 @@
 
 (eval-after-load 'whitespace-cleanup-mode
   '(diminish 'whitespace-cleanup-mode))
-
-;; ---------------
-;; Custom Macros
-;; ---------------
-;; Note: Replace current book name used in Macro to the name of current book for which highlights are to be converted from Bookcision Plain-Text import to Org-Mode
-;;       E.g Sapiens = ?S ?a ?p ?i ?e ?n ?s with New Book = ?N ?e ?w ?  ?B ?o ?o ?k
-(fset 'convert-kindle-highlight-from-bookcision-plain-text-to-org-mode
-      (kmacro-lambda-form [?\C-s ?L ?O ?C ?A ?T ?I ?O ?N ?: return ?\C-a ?\C-k C-up ?\C-p ?* ?* ?  ?\C-y ?\C-a ?\M-c ?\C-d ?\C-a ?\M-x ?o ?r ?g ?i ?d ?g ?e ?t ?c ?r ?e ?a ?t ?e return ?\C-n ?\C-e tab return tab ?: ?\C-y return tab ?: ?B ?O ?O ?K ?: ?  ?  ?  ?  ?  ?S ?a ?p ?i ?e ?n ?s ?: ?  ?A ?\S-  ?B ?r ?i ?e ?f ?  ?H ?i ?s ?t ?o ?r ?y ?  ?o ?f ?  ?H ?u ?m ?a ?n ?k ?i ?n ?d ?  ?\( ?Y ?u ?v ?a ?l ?  ?N ?o ?a ?h ?  ?H ?a ?r ?a ?r ?i ?\) C-down tab ?\C-  ?\C-e ?\M-q ?\C-  right ?\C-  ?\C- ] 0 "%d"))
 
 ;; ---------------
 ;; Theme
