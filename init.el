@@ -464,8 +464,8 @@
 (global-set-key [f11] 'toggle-fullscreen)
 
 ;; Global Default Zoom for Work Monitors
-(global-set-key (kbd "C-x C-g +") '(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
-(global-set-key (kbd "C-x C-g -") '(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
+(global-set-key (kbd "C-x C-g +") #'(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
+(global-set-key (kbd "C-x C-g -") #'(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
 
 ;; Puts custom-set-variables into a separate temporary file
 (setq custom-file (make-temp-file "emacs-custom"))
@@ -754,8 +754,8 @@
            org-music-file "~/Notes/Music.org"
            org-music-media-directory "~/Music/Sync/Org/"
            org-music-next-cloud-script "~/Code/bin/nextcloud.py"
-           org-music-operating-system "linux"
-           org-music-playlist-file "orgmusic-linux.m3u"
+           org-music-operating-system "mac"
+           org-music-playlist-file "orgmusic-mac.m3u"
            org-music-cache-size 100)
           (add-hook
            'org-mode-hook
