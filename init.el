@@ -16,6 +16,7 @@
 (setq straight-use-package-by-default t)
 (straight-use-package 'use-package)
 
+(setq straight-host-usernames '((github . "debanjum")))
 
 ;; ---------------
 ;; Org Mode
@@ -403,7 +404,7 @@
 
 ;; Org-Semantic Search Library
 (use-package semantic-search
-  :after (org org-music)
+  :after org
   :straight (semantic-search
              :type git
              :host github
@@ -606,11 +607,14 @@
         dired-listing-switches "-alh")
   :hook (dired-mode . dired-hide-details-mode))
 
-;; Jump to first non-whitespace character on line or beginning of line
-;; NOTE: crux-move-beginning-of-line has been modified by me.
-;;       Jumps to start of line first, jumps to first non-whitespace character if already at start of line
+;; Useful commandlets
 (use-package crux
-  :bind (("C-a" . crux-move-beginning-of-line)))
+  :straight (crus :type git
+                  :host github
+                  :repo "bbatsov/crux"
+                  :fork t)
+  :bind (("C-k" . crux-smart-kill-line)          ;; kill line from point or whole line
+         ("C-a" . crux-move-beginning-of-line))) ;; Jump to first non-whitespace character on line or beginning of line
 
 ;; Allow defining keybinding chords via use-package
 (use-package use-package-chords
@@ -746,7 +750,6 @@
 (setq company-show-numbers t)
 
 ;; Beancount Minor Mode
-;; Get beancount.el from https://bitbucket.org/blais/beancount
 (use-package beancount
   :straight (beancount :type git :host github :repo "beancount/beancount-mode")
   :after company
