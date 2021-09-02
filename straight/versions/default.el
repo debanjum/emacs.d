@@ -70,6 +70,7 @@
  ("org-contrib" . "fc81309cf6756607a836f93049a9393c2967c4e0")
  ("org-download" . "947ca223643d28e189480e607df68449c15786cb")
  ("org-drill" . "bf8fe812d44a3ce3e84361fb39b8ef28ca10fd0c")
+ ("org-media-annotation" . "cd2d1db193088ae7f3c1f707f155634e4fe39449")
  ("org-mime" . "21692f16ce436d9d2a546230f1e124beec0be7ee")
  ("org-music" . "1fab97cb572fdc65377f2d4d22babf6d13a0d57e")
  ("org-noter" . "9ead81d42dd4dd5074782d239b2efddf9b8b7b3d")
@@ -106,6 +107,5 @@
  ("web-mode" . "950ac58bd9e7d14a63761c7c8c245d0fc04595c5")
  ("whitespace-cleanup-mode" . "b108b73ddf8f7e747d5a20a681560171e02ad037")
  ("with-editor" . "5519b6a67ecd66865b4fdd5447425eee900c54f4")
- ("yasnippet" . "5cbdbf0d2015540c59ed8ee0fcf4788effdf75b6")
- ("~/Code/Lisp/org-media-annotation" . "cd2d1db193088ae7f3c1f707f155634e4fe39449"))
+ ("yasnippet" . "5cbdbf0d2015540c59ed8ee0fcf4788effdf75b6"))
 :beta
