@@ -395,8 +395,10 @@
   :after (emms org)
   :straight
   (org-media-annotation
-   :local-repo "~/Code/Lisp/org-media-annotation"
-   :type git))
+   :type git
+   :host github
+   :protocol ssh
+   :repo "debanjum/org-media-annotation"))
 
 ;; Org QL
 (use-package org-ql :after org)
