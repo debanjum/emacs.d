@@ -585,7 +585,7 @@
   (setq ispell-extra-args '("--sug-mode=ultra" "--camel-case")))
 
 ;; Add user elisp load path
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'load-path "~/.emacs.d/personal/")
 
 ;; Setup Mail: mu4e, smtpmail
 (load "setup-mail.el")
