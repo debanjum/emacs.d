@@ -14,7 +14,7 @@
  ("clip2org" . "fdf8ff2517fe99bc2f78654585a2077be1f3219e")
  ("clj-refactor.el" . "466822ff6f9da584f7cf72c868017b8840574dbd")
  ("clojure-mode" . "e1dc7caee76d117a366f8b8b1c2da7e6400636a8")
- ("codex-completion" . "69d68d80ce787ddcf6810cee855781b0c44d3106")
+ ("codex-completion" . "d6b723056001d7eb40a5e7b47485467b03594585")
  ("company-ledger" . "9fe9e3b809d6d2bc13c601953f696f43b09ea296")
  ("company-mode" . "4377506e625bdadd64bc7fc9e9e25576f44f458d")
  ("crux" . "86423e1058bfc9c2268c8188f14710738bdf7a31")

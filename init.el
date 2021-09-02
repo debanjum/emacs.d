@@ -591,6 +591,8 @@
 ;; Load custom macros
 (load "custom-macros.el")
 
+;; Load private configuration
+(load "private.el")
 
 ;; ---------------
 ;; Tools
@@ -773,6 +775,11 @@
            'write-file-functions
            (lambda () (untabify (point-min) (point-max)) nil)))
 
+;; Code Generation, Completion using OpenAI Codex
+(use-package codex-completion
+  :straight (codex-completion :type git :host github :repo "debanjum/codex-completion")
+  :bind ("C-c ." . codex-complete)
+  :config (setq codex-completion-openai-api-token openai-api-token))
 
 ;; ---------------
 ;; Language Packages
