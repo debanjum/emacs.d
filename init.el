@@ -16,8 +16,6 @@
 (setq straight-use-package-by-default t)
 (straight-use-package 'use-package)
 
-(setq straight-host-usernames '((github . "debanjum")))
-
 ;; ---------------
 ;; Org Mode
 ;; ---------------
@@ -349,7 +347,9 @@
   :straight (clip2org :type git
                       :host github
                       :repo "thamer/clip2org"
-                      :fork t)
+                      :fork (:type git
+                             :host github
+                             :repo "debanjum/clip2org"))
   :config (setq clip2org-clippings-file
                 (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
 
@@ -621,7 +621,9 @@
   :straight (crux :type git
                   :host github
                   :repo "bbatsov/crux"
-                  :fork t)
+                  :fork (:type git
+                         :host github
+                         :repo "debanjum/crux"))
   :bind (("C-k" . crux-smart-kill-line)          ;; kill line from point or whole line
          ("C-a" . crux-move-beginning-of-line))) ;; Jump to first non-whitespace character on line or beginning of line
 
