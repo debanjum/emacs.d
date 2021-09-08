@@ -346,7 +346,12 @@
   :config (setq org-randomnote-candidates '("~/Notes/Schedule.org" "~/Notes/Incoming.org" "~/Notes/Archive.org")))
 
 (use-package clip2org
-  :config (setq clip2org-clippings-file (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
+  :straight (clip2org :type git
+                      :host github
+                      :repo "thamer/clip2org"
+                      :fork t)
+  :config (setq clip2org-clippings-file
+                (expand-file-name "~/Documents/eBooks/My Clippings.txt")))
 
 ;; Drag and drop images/files to attach to org task
 (use-package org-download
@@ -613,7 +618,7 @@
 
 ;; Useful commandlets
 (use-package crux
-  :straight (crus :type git
+  :straight (crux :type git
                   :host github
                   :repo "bbatsov/crux"
                   :fork t)
