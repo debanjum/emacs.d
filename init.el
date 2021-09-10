@@ -64,7 +64,7 @@
              org-loop-over-headlines-in-active-region t
 
              ;; Prevent invisible edits and show region
-             org-catch-invisible-edits 'show-and-error
+             org-catch-invisible-edits 'smart
 
              ;; Enforce TODO dependency chains
              org-enforce-todo-dependencies t
