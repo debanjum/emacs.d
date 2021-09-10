@@ -60,11 +60,16 @@
              ;; Allow user specified scaling of org-inline images.
              org-image-actual-width nil
 
-             ;; Allow setting scheduled time if multiple entries selected
+             ;; Allow acting on multiple entries selected in buffer or agenda
+             ;; e.g To bulk update todo state, scheduled time etc
              org-loop-over-headlines-in-active-region t
+             org-agenda-loop-over-headlines-in-active-region t
+
+             ;; Indent entry body to level of heading
+             org-adapt-indentation t
 
              ;; Prevent invisible edits and show region
-             org-catch-invisible-edits 'smart
+             org-catch-invisible-edits 'show-and-error
 
              ;; Enforce TODO dependency chains
              org-enforce-todo-dependencies t
