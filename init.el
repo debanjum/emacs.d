@@ -766,7 +766,9 @@
   :after company
   :hook ((beancount-mode . company-mode)
          (beancount-mode . outline-minor-mode))
-  :mode ("\\.bean\\'" . beancount-mode))
+  :mode ("\\.bean\\'" . beancount-mode)
+  :config (setq
+           beancount-number-alignment-column 72))
 
 ;; Nov.el Epub Reader Mode
 (use-package nov
