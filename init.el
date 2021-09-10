@@ -1136,6 +1136,13 @@
 ;; ---------------
 ;; Theme
 ;; ---------------
+(defun toggle-dark-mode ()
+  "Toggle dark and light mode theme"
+  (interactive)
+  (cond
+   ((eq 'solarized-light (car custom-enabled-themes))
+       (load-theme 'solarized-dark t))
+   (t (load-theme 'solarized-light t))))
 
 ;; Solarized Emacs Theme @ https://github.com/bbatsov/solarized-emacs
 ;; If theme not loaded => init.el (partial) failed
