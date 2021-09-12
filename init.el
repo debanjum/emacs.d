@@ -594,6 +594,24 @@
   (setq-default ispell-program-name "aspell")
   (setq ispell-extra-args '("--sug-mode=ultra" "--camel-case")))
 
+;; Cache passphrase for symmetric encrypted files
+(setq epa-file-cache-passphrase-for-symmetric-encryption t)
+
+(require 'uniquify)
+(setq
+ ;; Uniquify buffer names foo.c:src, foo.c:extra
+ uniquify-buffer-name-style 'reverse uniquify-separator ":"
+
+ ;; rename after killing uniquified
+ uniquify-after-kill-buffer-p t
+
+ ;; ignore special buffers
+ uniquify-ignore-buffers-re "^\\*")
+
+;; no tabs by default. modes that really need tabs should enable
+;; indent-tabs-mode explicitly. e.g makefile-mode already does that
+(setq-default indent-tabs-mode nil)
+
 ;; Add user elisp load path
 (add-to-list 'load-path "~/.emacs.d/personal/")
 
@@ -665,19 +683,7 @@
          ("M-g i" . dumb-jump-go-prompt)
          ("M-g x" . dumb-jump-go-prefer-external)
          ("M-g z" . dumb-jump-go-prefer-external-other-window))
-  :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
-)
-
-;; Uniquify buffer names foo.c:src, foo.c:extra
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'reverse uniquify-separator ":")
-
-;; Cache passphrase for symmetric encrypted files
-(setq epa-file-cache-passphrase-for-symmetric-encryption t)
-
-;; no tabs by default. modes that really need tabs should enable
-;; indent-tabs-mode explicitly. e.g makefile-mode already does that
-(setq-default indent-tabs-mode nil)
+  :config (setq dumb-jump-selector 'ivy))
 
 ;; Expand-Region for intelligent highlight expansion
 (use-package expand-region
