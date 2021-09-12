@@ -802,6 +802,10 @@
 ;; Used to zoom in/out across all buffers
 (use-package default-text-scale)
 
+;; Allows folding active region
+(use-package fold-this)
+
+;; Hydras to group similar functions into menus
 (use-package hydra
   :config
   (progn
@@ -858,6 +862,54 @@ Frames: _f_rame new  _df_ delete
       ("df" delete-frame :exit t)
       ("q" nil)
       ("b" ivy-switch-buffer))
+
+    (defhydra hydra-ediff
+      (global-map "C-c d"
+       :color blue
+       :hint nil)
+      "
+^Buffers           Files           VC                     Ediff regions
+----------------------------------------------------------------------
+_b_uffers           _f_iles (_=_)       _r_evisions              _l_inewise
+_B_uffers (3-way)   _F_iles (3-way)                          _w_ordwise
+                  _c_urrent file
+"
+      ("b" ediff-buffers)
+      ("B" ediff-buffers3)
+      ("=" ediff-files)
+      ("f" ediff-files)
+      ("F" ediff-files3)
+      ("c" ediff-current-file)
+      ("r" ediff-revision)
+      ("l" ediff-regions-linewise)
+      ("w" ediff-regions-wordwise))
+
+    (defhydra hydra-hideshow
+      (global-map "C-c f"
+       :color pink
+       :hint nil
+       :idle 1.0
+       :pre (hs-minor-mode 1))
+      "
+Hide^^            ^Show^            ^Toggle^    ^Navigation^
+----------------------------------------------------------------
+_h_ hide all      _s_ show all      _t_oggle    _n_ext line
+_d_ hide block    _a_ show block              _p_revious line
+_l_ hide level
+_r_ hide region
+---------
+_q_ quit
+"
+      ("s" (progn (hs-show-all) (fold-this-unfold-all)) "show all")
+      ("h" hs-hide-all "hide all")
+      ("a" hs-show-block "show block")
+      ("d" hs-hide-block "hide block")
+      ("t" hs-toggle-hiding "toggle hiding")
+      ("l" hs-hide-level "hide level")
+      ("r" fold-this "fold active region")
+      ("n" forward-line "next line")
+      ("p" (forward-line -1) "previous line")
+      ("q" nil "quit" :color blue))
     )
   )
 
