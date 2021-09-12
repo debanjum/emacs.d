@@ -15,7 +15,7 @@
  ("clj-refactor.el" . "466822ff6f9da584f7cf72c868017b8840574dbd")
  ("clojure-mode" . "e1dc7caee76d117a366f8b8b1c2da7e6400636a8")
  ("codex-completion" . "d6b723056001d7eb40a5e7b47485467b03594585")
- ("company-ledger" . "9fe9e3b809d6d2bc13c601953f696f43b09ea296")
+ ("company-ledger" . "c6911b7e39b29c0d5f2541392ff485b0f53fd366")
  ("company-mode" . "4377506e625bdadd64bc7fc9e9e25576f44f458d")
  ("crux" . "86423e1058bfc9c2268c8188f14710738bdf7a31")
  ("csharp-mode" . "fe8a68e9849fc7617e0c870cacd6599b8a797638")
