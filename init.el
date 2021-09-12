@@ -813,7 +813,53 @@
       ("(" (default-text-scale-decrease) "global zoom-out")
       (")" (default-text-scale-increase) "global zoom-in")
       ("f" (toggle-fullscreen) "fullscreen"))
-    (add-hook 'text-scale-mode-hook 'hydra-zoom/body)))
+    (add-hook 'text-scale-mode-hook 'hydra-zoom/body)
+
+    (defhydra hydra-window
+      (global-map "C-c w"
+       :color red
+       :hint nil
+       :pre (progn (winner-mode 1) (require 'hydra-examples))
+       :post (winner-mode -1))
+      "
+ Split: _v_ert _x_:horz
+Delete: _o_nly  _da_ce  _dw_indow  _db_uffer  _df_rame
+  Move: _s_wap
+Frames: _f_rame new  _df_ delete
+  Misc: _a_ce  _u_ndo  _r_edo
+      "
+      ("h" windmove-left)
+      ("j" windmove-down)
+      ("k" windmove-up)
+      ("l" windmove-right)
+      ("H" hydra-move-splitter-left)
+      ("J" hydra-move-splitter-down)
+      ("K" hydra-move-splitter-up)
+      ("L" hydra-move-splitter-right)
+      ("|" (lambda ()
+             (interactive)
+             (split-window-right)
+             (windmove-right)))
+      ("_" (lambda ()
+             (interactive)
+             (split-window-below)
+             (windmove-down)))
+      ("v" split-window-right)
+      ("x" split-window-below)
+      ("u" winner-undo)
+      ("r" winner-redo) ;;Fixme, not working?
+      ("o" delete-other-windows :exit t)
+      ("a" ace-window :exit t)
+      ("f" new-frame :exit t)
+      ("s" ace-swap-window)
+      ("da" ace-delete-window)
+      ("dw" delete-window)
+      ("db" kill-this-buffer)
+      ("df" delete-frame :exit t)
+      ("q" nil)
+      ("b" ivy-switch-buffer))
+    )
+  )
 
 ;; ---------------
 ;; Language Packages
