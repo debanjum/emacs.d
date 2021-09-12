@@ -751,19 +751,21 @@
   :config (setq magit-completing-read-function 'ivy-completing-read))
 
 ;; Company mode for Completion
-(use-package company :defer t :diminish company-mode)
+(use-package company
+  :defer t
+  :diminish company-mode
+  :config (setq
+           ;; trigger completion immediately.
+           company-idle-delay 0.2
+
+           ;; number the candidates (use M-1, M-2 etc to select completions).
+           company-show-numbers t))
 
 ;; Beancount Company backend
 (use-package company-ledger
   :init
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-ledger)))
-
-;; Trigger completion immediately.
-(setq company-idle-delay 0)
-
-;; Number the candidates (use M-1, M-2 etc to select completions).
-(setq company-show-numbers t)
 
 ;; Beancount Minor Mode
 (use-package beancount
