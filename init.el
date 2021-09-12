@@ -572,19 +572,13 @@
   (yank-rectangle))
 (global-set-key (kbd "C-x r C-y") 'yank-replace-rectangle)
 
-;; Fullscreen
-(defun toggle-fullscreen (&optional f)
+(defun toggle-fullscreen ()
   (interactive)
   (let ((current-value (frame-parameter nil 'fullscreen)))
     (set-frame-parameter nil 'fullscreen
                          (if (equal 'fullboth current-value)
                              (if (boundp 'old-fullscreen) old-fullscreen nil)
                            (progn (setq old-fullscreen current-value) 'fullboth)))))
-(global-set-key [f11] 'toggle-fullscreen)
-
-;; Global Default Zoom for Work Monitors
-(global-set-key (kbd "C-x C-g +") #'(lambda () (interactive) (set-face-attribute 'default nil :height 180)))
-(global-set-key (kbd "C-x C-g -") #'(lambda () (interactive) (set-face-attribute 'default nil :height 130)))
 
 ;; Puts custom-set-variables into a separate temporary file
 (setq custom-file (make-temp-file "emacs-custom"))
@@ -804,6 +798,22 @@
   :straight (codex-completion :type git :host github :repo "debanjum/codex-completion")
   :bind ("C-c ." . codex-complete)
   :config (setq codex-completion-openai-api-token openai-api-token))
+
+;; Used to zoom in/out across all buffers
+(use-package default-text-scale)
+
+(use-package hydra
+  :config
+  (progn
+    (defhydra hydra-zoom ()
+      "zoom"
+      ("-" text-scale-decrease "out")         ; shadows default behavior
+      ("+" text-scale-increase "in")          ; shadows default behavior
+      ("0" (progn (text-scale-increase 0) (default-text-scale-reset)) "reset")   ; shadows default behavior 
+      ("(" (default-text-scale-decrease) "global zoom-out")
+      (")" (default-text-scale-increase) "global zoom-in")
+      ("f" (toggle-fullscreen) "fullscreen"))
+    (add-hook 'text-scale-mode-hook 'hydra-zoom/body)))
 
 ;; ---------------
 ;; Language Packages
