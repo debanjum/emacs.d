@@ -57,7 +57,7 @@
              ;; Speed Commands
              org-use-speed-commands t
 
-             ;; Allow user specified scaling of org-inline images.
+             ;; Allow user specified scaling of org-inline images
              org-image-actual-width nil
 
              ;; Allow acting on multiple entries selected in buffer or agenda
@@ -535,10 +535,6 @@
 ;; forward, previous paragraph
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-p") 'backward-paragraph)
-
-;; next, previous buffer
-(global-set-key (kbd "C-c C-p") 'previous-buffer)
-(global-set-key (kbd "C-c C-n") 'next-buffer)
 
 ;; Use UTF-8
 (prefer-coding-system 'utf-8)
