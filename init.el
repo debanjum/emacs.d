@@ -327,8 +327,11 @@
               (org-map-entries '(lambda () (org-id-get-create t))))
             ))
 
-(use-package org-contrib
-  :straight (:includes (org-contacts org-depend))
+(use-package org-contrib :after org)
+(use-package org-depend
+  :after org-contrib)
+(use-package org-contacts
+  :after org-contrib
   :config (setq org-contacts-files
                 (list (expand-file-name "~/Notes/Contacts.org"))))
 

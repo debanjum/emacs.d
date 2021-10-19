@@ -69,7 +69,7 @@
  ("ob-tmux" . "3687ed7b874bdfe14617f5d14492887cb0836a85")
  ("org" . "d70f2806788dce06871287ef02c88ee08076dffc")
  ("org-cliplink" . "13e0940b65d22bec34e2de4bc8cba1412a7abfbc")
- ("org-contrib" . "fc81309cf6756607a836f93049a9393c2967c4e0")
+ ("org-contrib" . "56a3bbbd486c567234e63c95c954c5e2ed77f8e7")
  ("org-download" . "947ca223643d28e189480e607df68449c15786cb")
  ("org-drill" . "bf8fe812d44a3ce3e84361fb39b8ef28ca10fd0c")
  ("org-media-annotation" . "cd2d1db193088ae7f3c1f707f155634e4fe39449")
