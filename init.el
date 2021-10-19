@@ -212,13 +212,12 @@
             (require 'ob-tangle)
             (require 'ob-clojure)
             ;; (require 'cider)
-            (load "ob-sudo.el")
+            ;; (load "ob-sudo.el")
 
             ;; Setup Babel languages. Can now do Literate Programming
             (org-babel-do-load-languages 'org-babel-load-languages
                                          '((python . t)
                                            (shell . t)
-                                           (sudo . t)  ;; ob-sudo. try sudo in babel instead of using :dir "sudo::/path/to/dir"
                                            (emacs-lisp . t)
                                            (ledger . t)
                                            (ditaa . t)
