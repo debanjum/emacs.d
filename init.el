@@ -98,6 +98,8 @@
              org-src-fontify-natively t
              ;; Auto-indent of code blocks
              org-src-tab-acts-natively t
+             ;; path to ditaa jar
+             org-ditaa-jar-path "~/Code/bin/ditaa.jar"
 
              ;; Org-Mode Link Search
              org-link-search-must-match-exact-headline nil
