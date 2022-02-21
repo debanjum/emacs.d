@@ -148,6 +148,10 @@
                 ((org-agenda-files '("~/Notes/Music.org"))
                  (org-agenda-text-search-extra-files nil))))
 
+             ;; Define Stuck Projects
+             org-stuck-projects
+             '("+LEVEL=2/-CANCELLED-DONE-FAILED" ("TODO" "ACTIVE" "WAITING") nil "")
+
              ;; Set custom faces for categories in agenda
              org-agenda-category-icon-alist `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
                                               ("Habit" ,(list (all-the-icons-faicon "circle-o-notch")) nil nil :ascent center)
@@ -523,6 +527,8 @@
 ;; Tramp default ssh
 (setq tramp-default-method "ssh")
 
+;; Set default tab width
+(setq-default tab-width 4)
 ;; C spacing = 4 instead of default 2
 (setq-default c-basic-offset 4)
 
@@ -695,6 +701,7 @@
   :config (progn
             (ivy-mode)
             (setq
+             ivy-wrap t
              ivy-use-virtual-buffers t
              enable-recursive-minibuffers t
              ivy-count-format ""
