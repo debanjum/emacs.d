@@ -931,6 +931,11 @@ _q_ quit
 ;; Set SBCL as default lisp interpreter
 (if (executable-find "sbcl") (setq inferior-lisp-program (executable-find "sbcl")))
 
+;; Use rainbow delimiters for lisps
+(use-package rainbow-delimiters
+  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
+         (clojure-mode . rainbow-delimiters-mode)))
+
 ;; Try evil for modal navigation, editing
 (use-package evil)
 ;;(use-package evil-org :ensure t)
