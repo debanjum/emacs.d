@@ -169,8 +169,8 @@
              org-tag-alist '((:startgroup) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup)
                              (:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
                              (:startgroup) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup)
-                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("WORK" . ?w) (:endgroup)
-                             (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L) (:endgroup)
+                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) (:endgroup)
+                             (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L)  ("WRITE" . ?w) (:endgroup)
                              ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
 
              ;; Customise Refile (C-c C-w)
