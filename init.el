@@ -674,6 +674,8 @@
   :diminish undo-tree-mode
   :config (progn (global-undo-tree-mode 1)
                  (setq undo-tree-visualizer-timestamps t)
+                 ;; Prevent undo tree files from polluting directories with undo-tree history
+                 (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
                  (setq undo-tree-visualizer-diff t)))
 
 (use-package dumb-jump
