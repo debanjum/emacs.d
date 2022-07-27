@@ -422,15 +422,15 @@
 (use-package org-ql :after org)
 (use-package helm-org-ql :after org)
 
-;; Org-Semantic Search Library
-(use-package semantic-search
+;; Khoj Package for Semantic Search
+(use-package khoj
   :after org
-  :straight (semantic-search
+  :straight (khoj
              :type git
              :host github
-             :repo "debanjum/semantic-search"
-             :files (:defaults "src/interface/emacs/semantic-search.el"))
-  :bind ("C-c s" . 'semantic-search))
+             :repo "debanjum/khoj"
+             :files (:defaults "src/interface/emacs/khoj.el"))
+  :bind ("C-c s" . 'khoj))
 
 (use-package plantuml-mode
   :after org
