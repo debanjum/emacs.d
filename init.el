@@ -759,6 +759,9 @@
   :bind ("C-c p" . magit-find-file-completing-read)
   :config (setq magit-completing-read-function 'ivy-completing-read))
 
+(use-package forge
+  :after magit)
+
 ;; Company mode for Completion
 (use-package company
   :defer t
@@ -921,6 +924,8 @@ _q_ quit
       ("q" nil "quit" :color blue))
     )
   )
+
+(use-package keycast)
 
 ;; ---------------
 ;; Language Packages
