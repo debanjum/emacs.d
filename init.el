@@ -430,7 +430,8 @@
              :host github
              :repo "debanjum/khoj"
              :files (:defaults "src/interface/emacs/khoj.el"))
-  :bind ("C-c s" . 'khoj))
+  :bind ("C-c s" . 'khoj)
+  :config (setq khoj--rerank-after-idle-time 2.0))
 
 (use-package plantuml-mode
   :after org
@@ -539,8 +540,9 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; backup in single, flat directory
+;; backup, autosaves in single, flat directory
 (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
+; (setq auto-save-file-name-transforms '(("" . "~/.emacs.d/backup")))
 
 ;; forward, previous paragraph
 (global-set-key (kbd "M-n") 'forward-paragraph)
