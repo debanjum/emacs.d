@@ -341,12 +341,7 @@
             ))
 
 (use-package org-contrib :after org)
-(use-package org-depend
-  :after org-contrib)
-(use-package org-contacts
-  :after org-contrib
-  :config (setq org-contacts-files
-                (list (expand-file-name "~/Notes/Contacts.org"))))
+(use-package org-depend :after org-contrib)
 
 ;; Orgit: Support for Org links to Magit buffers
 (use-package orgit :after (org magit))
