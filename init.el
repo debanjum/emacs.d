@@ -1,3 +1,7 @@
+; Pre-init setup. Useful for ESUP profiling
+(setq use-short-answers t)  ; Answer with y or n instead of the default yes or no
+(setq vc-follow-symlinks t) ; Do Not Ask to Follow VC Symlinks
+
 ;; Install Straight.el as Package Manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -20,6 +24,10 @@
 ;; Org Mode
 ;; ---------------
 (use-package all-the-icons) ;; icon set
+
+;; Setup ESUP to Profile Emacs
+(use-package esup
+  :init (setq esup-depth 0)) ; fix to make ESUP work with straight.el
 
 ;; Org-Mode
 (use-package org
@@ -489,9 +497,6 @@
 ;; Set current buffer name in emacs X11 window title
 (setq frame-title-format "%b - Emacs")
 
-;; Answer with y or n instead of the default yes or no
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 ;; Inhibit startup screen
 (setq inhibit-startup-screen t)
 
@@ -743,7 +748,7 @@
 (use-package gnu-elpa-keyring-update)
 
 ;; Gnuplot for Plotting in org
-(use-package gnuplot)
+(use-package gnuplot :defer t)
 
 ;; ag - the silver searcher
 (use-package ag
@@ -796,7 +801,9 @@
   :ensure xml+
   :mode ("\\.epub\\'" . nov-mode))
 
+(use-package package-lint :defer t) ; useful when developing elisp packages
 (use-package flycheck
+  :defer t
   :config (setq flycheck-emacs-lisp-load-path 'inherit))
 
 ;; whitespace-cleanup-mode. remove whitespaces on buffer save
@@ -944,11 +951,11 @@ _q_ quit
          (clojure-mode . rainbow-delimiters-mode)))
 
 ;; Try evil for modal navigation, editing
-(use-package evil)
+(use-package evil :defer t)
 ;;(use-package evil-org :ensure t)
 
 ;; Csharp Mode
-(use-package csharp-mode)
+(use-package csharp-mode :defer t)
 
 ;; Elpy for Python
 (use-package elpy
@@ -990,12 +997,12 @@ _q_ quit
   :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
 ;; Rust Mode
-(use-package rust-mode)
+(use-package rust-mode :defer t)
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode))
 
 ;; Install Haskell-Mode
-(use-package haskell-mode)
+(use-package haskell-mode :defer t)
 
 ;; Dante for Haskell
 (use-package dante
@@ -1005,7 +1012,7 @@ _q_ quit
   (add-hook 'haskell-mode-hook 'dante-mode))
 
 ;; Tidal for Live Coding Music in Haskell
-(use-package tidal)
+(use-package tidal :defer t)
 
 ;; Web-Mode for HTML
 (use-package web-mode
