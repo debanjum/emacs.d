@@ -618,7 +618,7 @@
 (add-to-list 'load-path "~/.emacs.d/personal/")
 
 ;; Setup Mail: mu4e, smtpmail
-(load "setup-mail.el")
+;; (load "setup-mail.el")
 
 ;; Load custom macros
 (load "custom-macros.el")
