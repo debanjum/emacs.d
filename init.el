@@ -934,6 +934,20 @@ _q_ quit
 ;; ---------------
 ;; Language Packages
 ;; ---------------
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t
+  :hook ((prog-mode . copilot-mode))
+  :config (progn
+            (setq copilot-node-executable "~/.nvm/versions/node/v16.17.0/bin/node")
+            (defun my/copilot-tab ()
+              (interactive)
+              (or (copilot-accept-completion)
+                  (indent-for-tab-command)))
+
+            (with-eval-after-load 'copilot
+              (define-key copilot-mode-map (kbd "<tab>") #'my/copilot-tab))))
+
 (use-package ruby-mode
   :mode "\\.rb\\'")
 
