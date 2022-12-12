@@ -1145,6 +1145,13 @@ _q_ quit
 (use-package elfeed
   :defer t
   :init (setq elfeed-db-directory "~/Notes/.elfeed")
+  :straight (elfeed :type git
+                    :host github
+                    :repo "skeeto/elfeed"
+                    :fork (:type git
+                           :host github
+                           :repo "debanjum/elfeed"
+                           :branch "set-initial-query-via-url-query-param-in-elfeed-web"))
   :bind (:map elfeed-search-mode-map
               ("h" . (lambda () (interactive)
                        (elfeed-search-set-filter "@1-months-ago +unread +hack")))
