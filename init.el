@@ -762,7 +762,8 @@
   :config (setq magit-completing-read-function 'ivy-completing-read))
 
 (use-package forge
-  :after magit)
+  :after magit
+  :config (setq forge-owned-accounts '(("debanjum"))))
 
 ;; Company mode for Completion
 (use-package company
