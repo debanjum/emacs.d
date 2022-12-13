@@ -1111,38 +1111,6 @@ _q_ quit
 ;; ---------------
 ;; Feed Reader
 ;; ---------------
-;; Organise feeds in an Org file
-(use-package elfeed-org
-  :after (org elfeed)
-  :config (progn
-            (elfeed-org)
-            (setq rmh-elfeed-org-files (list (expand-file-name "~/Notes/Feed.org")))))
-
-;; elfeed helper functions
-(defun elfeed-load ()
-  "Wrapper to load the elfeed db from disk before opening"
-  (interactive)
-  (elfeed-db-load) ;; this was commented earlier due to strange behavior
-  (elfeed)
-  (elfeed-search-update :force))
-(defun deb/elfeed-save-bury ()
-  "Wrapper to save the elfeed db to disk before burying buffer"
-  (interactive)
-  (elfeed-db-save)
-  (quit-window))
-(defun elfeed-junk-filter (entry)
-  (when (or (string-match "thestranger" (elfeed-entry-link entry))
-            (string-match "ycombinator" (elfeed-entry-link entry)))
-    (let ((title (elfeed-entry-title entry))
-          (content (elfeed-deref (elfeed-entry-content entry)))
-          (trump "\\<trump\\>")
-          (case-fold-search t))
-      (unless (or (string-match trump title)
-                  (string-match trump content))
-        (elfeed-tag entry 'junk)))))
-
-(add-hook 'elfeed-new-entry-hook #'elfeed-junk-filter)
-
 (use-package elfeed
   :defer t
   :init (setq elfeed-db-directory "~/Notes/.elfeed")
@@ -1170,6 +1138,13 @@ _q_ quit
                        (elfeed-search-set-filter "@1-months-ago +unread")))
               ("q" . deb/elfeed-save-bury)))
 
+;; Organise feeds in an Org file
+(use-package elfeed-org
+  :after (org elfeed)
+  :config (progn
+            (elfeed-org)
+            (setq rmh-elfeed-org-files (list (expand-file-name "~/Notes/Feed.org")))))
+
 (use-package elfeed-web :after elfeed :defer t)
 
 ;; Improve Elfeed Youtube RSS Feeds Integration
@@ -1193,6 +1168,31 @@ _q_ quit
   :bind (:map elfeed-show-mode-map
               ("C-c C-f" . elfeed-tube-mpv-follow-mode)
               ("C-c C-w" . elfeed-tube-mpv-where)))
+
+;; Elfeed helper functions
+(defun elfeed-load ()
+  "Wrapper to load the elfeed db from disk before opening"
+  (interactive)
+  (elfeed-db-load) ;; this was commented earlier due to strange behavior
+  (elfeed)
+  (elfeed-search-update :force))
+(defun deb/elfeed-save-bury ()
+  "Wrapper to save the elfeed db to disk before burying buffer"
+  (interactive)
+  (elfeed-db-save)
+  (quit-window))
+(defun elfeed-junk-filter (entry)
+  (when (or (string-match "thestranger" (elfeed-entry-link entry))
+            (string-match "ycombinator" (elfeed-entry-link entry)))
+    (let ((title (elfeed-entry-title entry))
+          (content (elfeed-deref (elfeed-entry-content entry)))
+          (trump "\\<trump\\>")
+          (case-fold-search t))
+      (unless (or (string-match trump title)
+                  (string-match trump content))
+        (elfeed-tag entry 'junk)))))
+
+(add-hook 'elfeed-new-entry-hook #'elfeed-junk-filter)
 
 ;; ---------------
 ;; Music Player
