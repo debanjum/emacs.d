@@ -1172,6 +1172,27 @@ _q_ quit
 
 (use-package elfeed-web :after elfeed :defer t)
 
+;; Improve Elfeed Youtube RSS Feeds Integration
+(use-package elfeed-tube
+  :after elfeed
+  :defer t
+  :config (progn
+            (setq elfeed-tube-auto-save-p nil)
+            (setq elfeed-tube-auto-fetch-p t)
+            (elfeed-tube-setup))
+  :bind (:map elfeed-show-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)
+         :map elfeed-search-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)))
+(use-package mpv)
+(use-package elfeed-tube-mpv
+  :after elfeed
+  :defer t
+  :bind (:map elfeed-show-mode-map
+              ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+              ("C-c C-w" . elfeed-tube-mpv-where)))
 
 ;; ---------------
 ;; Music Player
