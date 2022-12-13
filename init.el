@@ -940,7 +940,7 @@ _q_ quit
   :ensure t
   :hook ((prog-mode . copilot-mode))
   :config (progn
-            (setq copilot-node-executable "~/.nvm/versions/node/v16.17.0/bin/node")
+            (setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
             (defun my/copilot-tab ()
               (interactive)
               (or (copilot-accept-completion)
