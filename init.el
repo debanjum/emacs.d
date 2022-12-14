@@ -938,6 +938,25 @@ _q_ quit
     )
   )
 
+(use-package mu4e-alert
+  :ensure t
+  :after mu4e
+  :straight (mu4e-alert :type git :host github :repo "xzz53/mu4e-alert")
+  :init
+  (setq mu4e-alert-interesting-mail-query
+    (concat
+     "flag:unread maildir:/riseup/INBOX "
+     "OR "
+     "flag:unread maildir:/gmail/INBOX"
+     ))
+  (mu4e-alert-enable-mode-line-display)
+  (defun refresh-mu4e-alert-mode-line ()
+    (interactive)
+    (mu4e--server-kill)
+    (mu4e-alert-enable-mode-line-display)
+    )
+  (run-with-timer 0 60 'refresh-mu4e-alert-mode-line))
+
 (use-package keycast)
 
 ;; ---------------
