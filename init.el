@@ -29,6 +29,14 @@
 (use-package esup
   :init (setq esup-depth 0)) ; fix to make ESUP work with straight.el
 
+;; Mu4e For Mail on Emacs
+(use-package mu4e-org
+  :straight (mu4e-org
+             :type git
+             :host github
+             :repo "djcb/mu"
+             :files (:defaults "mu4e/mu4e-org.el")))
+
 ;; Org-Mode
 (use-package org
   ;; Load org in org-mode
@@ -322,9 +330,9 @@
                 (org-link-open-from-string (url-encode-url deep-link))))
 
             ;;store org-mode links to messages
-            (require 'org-mu4e)
+            (require 'mu4e-org)
             ;;store link to query if in header view, not the message cursor is currently on
-            (setq org-mu4e-link-query-in-headers-mode t)
+            (setq mu4e-org-link-query-in-headers-mode t)
 
             (defun htmlize-and-send ()
               "When in an org-mu4e-compose-org-mode message, htmlize and send it."
@@ -618,7 +626,7 @@
 (add-to-list 'load-path "~/.emacs.d/personal/")
 
 ;; Setup Mail: mu4e, smtpmail
-;; (load "setup-mail.el")
+(load "setup-mail.el")
 
 ;; Load custom macros
 (load "custom-macros.el")
