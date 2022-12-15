@@ -440,7 +440,7 @@
              :type git
              :host github
              :repo "debanjum/khoj"
-             :files (:defaults "src/interface/emacs/khoj.el"))
+             :files ("src/interface/emacs/khoj.el"))
   :bind ("C-c s" . 'khoj)
   :config (setq khoj--rerank-after-idle-time 2.0))
 
