@@ -795,6 +795,7 @@
   :straight (beancount :type git :host github :repo "beancount/beancount-mode")
   :after company
   :hook ((beancount-mode . company-mode)
+         (beancount-mode . copilot-mode)
          (beancount-mode . outline-minor-mode))
   :mode ("\\.bean\\'" . beancount-mode)
   :config (setq
@@ -968,6 +969,7 @@ _q_ quit
   :hook ((prog-mode . copilot-mode))
   :config (progn
             (setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
+            (setq copilot-idle-delay 0.8)
             (defun my/copilot-tab ()
               (interactive)
               (or (copilot-accept-completion)
