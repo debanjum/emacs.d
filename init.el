@@ -236,7 +236,11 @@
             ;; (require 'cider)
             ;; (load "ob-sudo.el")
 
+            ;; Redisplay images after org-babel execute
+            (add-hook 'org-babel-after-execute-hook 'org-redisplay-inline-images)
+
             ;; Setup Babel languages. Can now do Literate Programming
+            (setq org-babel-python-command "python3")
             (org-babel-do-load-languages 'org-babel-load-languages
                                          '((python . t)
                                            (shell . t)
@@ -1008,6 +1012,9 @@ _q_ quit
 
 ;; Make ipython 5.x (color)compatible with Emacs eshell
 (if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
+
+;; Emacs IPython Notebook (EIN) OR Jupyter Notebooks
+(use-package ein :after org)
 
 ;; Clojure
 (use-package clojure-mode
