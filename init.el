@@ -1345,3 +1345,14 @@ _q_ quit
   :config (progn
             (load "solarized-theme-autoloads" nil t)
             (load-theme 'solarized-light t)))
+
+;; For some reason, having this at the end of init.el
+;; Fixes marking recurring tasks as done from agenda 🤷🏾
+(setq
+ ;; Allow acting on multiple entries selected in buffer or agenda
+ ;; e.g To bulk update todo state, scheduled time etc
+ org-loop-over-headlines-in-active-region t
+ org-agenda-loop-over-headlines-in-active-region t
+
+ ;; Indent entry body to level of heading
+ org-adapt-indentation t)
