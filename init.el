@@ -822,7 +822,7 @@
 ;; Code Generation, Completion using OpenAI Codex
 (use-package codex-completion
   :straight (codex-completion :type git :host github :repo "debanjum/codex-completion")
-  :bind ("C-c ." . codex-complete)
+  :bind ("C-c ." . codex-completion)
   :config (setq codex-completion-openai-api-token openai-api-token))
 
 ;; Used to zoom in/out across all buffers
