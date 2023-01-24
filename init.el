@@ -970,7 +970,8 @@ _q_ quit
 (use-package copilot
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :ensure t
-  :hook ((prog-mode . copilot-mode))
+  :hook ((prog-mode . copilot-mode)
+         (mu4e-compose-mode . copilot-mode))
   :config (progn
             (setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
             (setq copilot-idle-delay 0.8)
