@@ -446,7 +446,9 @@
              :repo "debanjum/khoj"
              :files ("src/interface/emacs/khoj.el"))
   :bind ("C-c s" . 'khoj)
-  :config (setq khoj--rerank-after-idle-time 2.0))
+  :config (setq
+           khoj-server-url "http://127.0.0.1:8000"
+           khoj--rerank-after-idle-time 2.0))
 
 (use-package plantuml-mode
   :after org
@@ -799,7 +801,6 @@
   :straight (beancount :type git :host github :repo "beancount/beancount-mode")
   :after company
   :hook ((beancount-mode . company-mode)
-         (beancount-mode . copilot-mode)
          (beancount-mode . outline-minor-mode))
   :mode ("\\.bean\\'" . beancount-mode)
   :config (setq
