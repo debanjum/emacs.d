@@ -1318,6 +1318,19 @@ _q_ quit
              (if (equal buffer-file-name (expand-file-name org-music-file))
                  (org-music-mode))))))
 
+;; -------------
+;; Org Mode Hack
+;; -------------
+;; Issue: Marking recurring task as done from agenda would update other recurring items too
+;; Mitigation: Configuring these org settings towards the end of my init.el fixes the issue 🤷🏾
+(setq
+ ;; Allow acting on multiple entries selected in buffer or agenda
+ ;; e.g To bulk update todo state, scheduled time etc
+ org-loop-over-headlines-in-active-region t
+ org-agenda-loop-over-headlines-in-active-region t
+
+ ;; Indent entry body to level of heading
+ org-adapt-indentation t)
 
 ;; ---------------
 ;; Diminish Modes
@@ -1366,13 +1379,3 @@ _q_ quit
             (load "solarized-theme-autoloads" nil t)
             (load-theme 'solarized-light t)))
 
-;; For some reason, having this at the end of init.el
-;; Fixes marking recurring tasks as done from agenda 🤷🏾
-(setq
- ;; Allow acting on multiple entries selected in buffer or agenda
- ;; e.g To bulk update todo state, scheduled time etc
- org-loop-over-headlines-in-active-region t
- org-agenda-loop-over-headlines-in-active-region t
-
- ;; Indent entry body to level of heading
- org-adapt-indentation t)
