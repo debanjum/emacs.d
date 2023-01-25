@@ -753,6 +753,17 @@
   :bind ("C-x C-r" . counsel-recentf)  ;; replace `find-file-read-only` with more a useful command
   :config (setq recentf-max-saved-items 50))
 
+(use-package outline
+  :straight (:type built-in)
+  :bind (:map outline-minor-mode-map
+              ("C-u C-c C-o" . outline-cycle-buffer)
+              ("C-c C-o" . outline-cycle)
+              ("C-c C-n" . outline-next-visible-heading)
+              ("C-c C-p" . outline-previous-visible-heading)
+              ("C-c C-f" . outline-forward-same-level)
+              ("C-c C-b" . outline-backward-same-level)
+              ("C-c C-u" . outline-up-heading)))
+
 ;; To keep GNU ELPA Keyring up-to-date
 (use-package gnu-elpa-keyring-update)
 
