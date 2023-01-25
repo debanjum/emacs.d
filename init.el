@@ -1381,20 +1381,25 @@ _q_ quit
   "Toggle dark and light mode theme"
   (interactive)
   (cond
-   ((eq 'solarized-light (car custom-enabled-themes))
-       (load-theme 'solarized-dark t))
-   (t (load-theme 'solarized-light t))))
+   ((eq 'my-solarized-light (car custom-enabled-themes))
+       (load-theme 'my-solarized-dark t))
+   (t (load-theme 'my-solarized-light t))))
 
 ;; Solarized Emacs Theme @ https://github.com/bbatsov/solarized-emacs
 ;; If theme not loaded => init.el (partial) failed
 (use-package solarized-theme
   :init (progn
-          ;; Don't change size of org-mode headlines (but keep other size-changes)
-          (setq solarized-scale-org-headlines nil)
-          ;; Don't change the font for some headings and titles
-          (setq solarized-use-variable-pitch nil)
-          (setq cursor-color "aaaaaa"))
+          (setq
+           ;; set theme directory
+           custom-theme-directory (expand-file-name "themes" user-emacs-directory)
+           ;; do not change headline text formatting on task state to done
+           org-fontify-done-headline nil
+           ;; Don't scale outline headings based on their depth
+           solarized-scale-org-headlines nil
+           solarized-scale-outline-headlines nil
+           ;; Don't change the font for some headings and titles
+           solarized-use-variable-pitch nil))
   :config (progn
             (load "solarized-theme-autoloads" nil t)
-            (load-theme 'solarized-light t)))
+            (load-theme 'my-solarized-light t)))
 
