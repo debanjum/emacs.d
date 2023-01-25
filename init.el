@@ -1392,8 +1392,6 @@ _q_ quit
           (setq
            ;; set theme directory
            custom-theme-directory (expand-file-name "themes" user-emacs-directory)
-           ;; do not change headline text formatting on task state to done
-           org-fontify-done-headline nil
            ;; Don't scale outline headings based on their depth
            solarized-scale-org-headlines nil
            solarized-scale-outline-headlines nil
