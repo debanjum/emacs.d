@@ -1403,3 +1403,6 @@ _q_ quit
             (load "solarized-theme-autoloads" nil t)
             (load-theme 'my-solarized-light t)))
 
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
