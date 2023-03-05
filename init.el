@@ -423,16 +423,6 @@
               (org-drill)
               (save-buffer))))
 
-;; Org-Media-Annotation Mode
-(use-package org-media-annotation
-  :after (emms org)
-  :straight
-  (org-media-annotation
-   :type git
-   :host github
-   :protocol ssh
-   :repo "debanjum/org-media-annotation"))
-
 ;; Org QL
 (use-package org-ql :after org)
 (use-package helm-org-ql :after org)
@@ -1268,6 +1258,12 @@ _q_ quit
 
 ;; EMMS - Emacs Media Player
 (use-package emms
+  :straight (emms
+             :type git
+             :repo "https://git.savannah.gnu.org/git/emms.git"
+             :fork (:type git
+                    :host github
+                    :repo "debanjum/emms"))
   :defer t
   :bind
   (("C-c e SPC" . emms-pause)
@@ -1336,6 +1332,16 @@ _q_ quit
            (lambda()
              (if (equal buffer-file-name (expand-file-name org-music-file))
                  (org-music-mode))))))
+
+;; Org-Media-Annotation Mode
+(use-package org-media-annotation
+  :after (emms org)
+  :straight
+  (org-media-annotation
+   :type git
+   :host github
+   :protocol ssh
+   :repo "debanjum/org-media-annotation"))
 
 ;; -------------
 ;; Org Mode Hack
