@@ -84,6 +84,13 @@
              ;; Indent entry body to level of heading
              org-adapt-indentation t
 
+             ;; Allow using subscript and superscript with _{}, ^{} respectively
+             org-use-sub-superscripts '{}
+             org-pretty-entities-include-sub-superscripts t
+
+             ;; Display text as UTF-8
+             org-pretty-entities t
+
              ;; Prevent invisible edits and show region
              org-catch-invisible-edits 'show-and-error
 
@@ -110,7 +117,7 @@
              org-babel-clojure-backend 'cider
              ;; execute without confirmation
              org-confirm-babel-evaluate nil
-             ;; Syntax hilighting of code blocks
+             ;; Syntax highlighting of code blocks
              org-src-fontify-natively t
              ;; Auto-indent of code blocks
              org-src-tab-acts-natively t
@@ -983,6 +990,7 @@ _q_ quit
     )
   (run-with-timer 0 60 'refresh-mu4e-alert-mode-line))
 
+;; Display command or keybinding to help in demos
 (use-package keycast)
 
 ;; ---------------
