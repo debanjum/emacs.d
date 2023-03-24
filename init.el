@@ -456,6 +456,13 @@
      (expand-file-name "~/Builds/PlantUML/plantuml.1.2020.9.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
 
+;; Support Transclusion links in Org-Mode
+(use-package org-transclusion
+  :after org
+  :bind (:map org-mode-map
+              ("C-c t a" . 'org-transclusion-add)
+              ("C-c t l" . 'org-transclusion-make-from-link)))
+
 ;; My Org Blog Setup
 ;;(use-package blog
 ;;  :after org
