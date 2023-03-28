@@ -445,7 +445,9 @@
   :bind ("C-c s" . 'khoj)
   :config (setq
            khoj-server-url "http://127.0.0.1:8000"
-           khoj--rerank-after-idle-time 2.0))
+           khoj-openai-api-key openai-api-token
+           khoj-org-files '("~/Notes/Incoming.org" "~/Notes/Schedule.org" "~/Notes/Archive.org" "~/Notes/Kindle.org")))
+
 
 (use-package plantuml-mode
   :after org
