@@ -1195,7 +1195,7 @@ _q_ quit
                     :fork (:type git
                            :host github
                            :repo "debanjum/elfeed"
-                           :branch "set-initial-query-via-url-query-param-in-elfeed-web"))
+                           :branch "master"))
   :bind (:map elfeed-search-mode-map
               ("h" . (lambda () (interactive)
                        (elfeed-search-set-filter "@1-months-ago +unread +hack")))
