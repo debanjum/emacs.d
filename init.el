@@ -1010,12 +1010,15 @@ _q_ quit
   :ensure t
   :hook ((prog-mode . copilot-mode)
          (mu4e-compose-mode . copilot-mode))
+  :bind (:map copilot-completion-map
+              ("C-c <right>" . copilot-next-completion)
+              ("C-c <left>" . copilot-previous-completion))
   :config (progn
             (setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
             (setq copilot-idle-delay 0.8)
             (defun my/copilot-tab ()
               (interactive)
-              (or (copilot-accept-completion)
+              (or (copilot-accept-completion-by-paragraph)
                   (indent-for-tab-command)))
 
             (with-eval-after-load 'copilot
