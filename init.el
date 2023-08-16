@@ -434,21 +434,6 @@
 (use-package org-ql :after org)
 (use-package helm-org-ql :after org)
 
-;; Khoj Package for Semantic Search
-(use-package khoj
-  :after org
-  :straight (khoj
-             :type git
-             :host github
-             :repo "debanjum/khoj"
-             :files ("src/interface/emacs/khoj.el"))
-  :bind ("C-c s" . 'khoj)
-  :config (setq
-           khoj-server-url "http://127.0.0.1:8000"
-           khoj-openai-api-key openai-api-token
-           khoj-org-files '("~/Notes/Incoming.org" "~/Notes/Schedule.org" "~/Notes/Archive.org" "~/Notes/Kindle.org")))
-
-
 (use-package plantuml-mode
   :after org
   :config
@@ -459,11 +444,12 @@
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))))
 
 ;; Support Transclusion links in Org-Mode
-(use-package org-transclusion
-  :after org
-  :bind (:map org-mode-map
-              ("C-c t a" . 'org-transclusion-add)
-              ("C-c t l" . 'org-transclusion-make-from-link)))
+;; *disabled*: Org-Transclusion deleting large amounts of text content on file save for some reason
+;;(use-package org-transclusion
+;;  :after org
+;;  :bind (:map org-mode-map
+;;              ("C-c t a" . 'org-transclusion-add)
+;;              ("C-c t l" . 'org-transclusion-make-from-link)))
 
 ;; My Org Blog Setup
 ;;(use-package blog
@@ -638,7 +624,7 @@
 (add-to-list 'load-path "~/.emacs.d/personal/")
 
 ;; Setup Mail: mu4e, smtpmail
-(load "setup-mail.el")
+;(load "setup-mail.el")
 
 ;; Load custom macros
 (load "custom-macros.el")
@@ -649,6 +635,22 @@
 ;; ---------------
 ;; Tools
 ;; ---------------
+;; Khoj for Search, Chat
+(use-package khoj
+  :after org
+  :straight (khoj
+             :type git
+             :host github
+             :repo "khoj-ai/khoj"
+             :files ("src/interface/emacs/khoj.el"))
+  :bind ("C-c s" . 'khoj)
+  :config (setq
+           khoj-server-url "http://localhost:42110"
+           khoj-chat-offline t
+           khoj-openai-api-key openai-api-token
+           khoj-chat-model "gpt-4"
+           khoj-org-files '("~/Notes/Incoming.org" "~/Notes/Schedule.org" "~/Notes/Archive.org" "~/Notes/Kindle.org")))
+
 (use-package dired
   :straight (:type built-in)
   :bind (:map dired-mode-map
@@ -1043,14 +1045,14 @@ _q_ quit
 (use-package csharp-mode :defer t)
 
 ;; Elpy for Python
-(use-package elpy
-  :commands elpy-enable
-  :init (with-eval-after-load 'python (elpy-enable))
-  :config (progn
-            (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-            (setq
-             elpy-test-nose-runner-command '("nosetests" "-s" "-v")
-             elpy-test-runner 'elpy-test-nose-runner)))
+;;(use-package elpy
+;;  :commands elpy-enable
+;;  :init (with-eval-after-load 'python (elpy-enable))
+;;  :config (progn
+;;            (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+;;            (setq
+;;             elpy-test-nose-runner-command '("nosetests" "-s" "-v")
+;;             elpy-test-runner 'elpy-test-nose-runner)))
 
 ;; Make ipython 5.x (color)compatible with Emacs eshell
 (if (executable-find "ipython") (setq python-shell-interpreter "ipython" python-shell-interpreter-args "--simple-prompt -i"))
