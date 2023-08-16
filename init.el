@@ -189,12 +189,11 @@
 
              ;; Set Tags, Tag Groups and Columns Width
              org-tags-column -78
-             org-tag-alist '((:startgroup) ("@WORK" . ?o) ("@HOME" . ?m) ("@COMMUTE" . ?c) (:endgroup)
-                             (:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
+             org-tag-alist '((:startgroup) ("HACK" . ?h) ("UNDERSTAND" . ?u) ("EXPERIENCE" . ?e) (:endgroup)
                              (:startgroup) ("TRY" . ?t) ("MAINTAIN" . ?n) ("FIX" . ?x) ("UPGRADE" . ?r) (:endgroup)
-                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) (:endgroup)
+                             (:startgroup) ("PERSONAL" . ?p) ("ENVIRONMENT" . ?v) ("SOCIAL" . ?s) ("PROJECT" . ?j) (:endgroup)
                              (:startgroup) ("READ" . ?R) ("WATCH" . ?W) ("LISTEN" . ?L)  ("WRITE" . ?w) (:endgroup)
-                             ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f) ("NOTE" . ?j))
+                             ("TOOLS" . ?g) ("CALL" . ?a) ("BUY" . ?y) ("IDLE" . ?d) ("HEALTH" . ?l) ("FINANCE" . ?f))
 
              ;; Customise Refile (C-c C-w)
              org-refile-use-outline-path 'file ;; specify in file.org/heading/sub-heading format
